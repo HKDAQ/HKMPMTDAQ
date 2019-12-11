@@ -10,6 +10,7 @@
 #include "Store.h"
 #include "BoostStore.h"
 #include "Logging.h"
+#include "Utilities.h"
 
 #include <zmq.hpp>
 
