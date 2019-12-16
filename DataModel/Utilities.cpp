@@ -16,8 +16,8 @@ bool Utilities::AddService(std::string ServiceName, unsigned int port, bool Stat
   std::stringstream test;
   test<<"Add "<< ServiceName <<" "<<m_UUID<<" "<<port<<" "<<((int)StatusQuery) ;
 
-  zmq::message_t send(test.str().length());
-  snprintf ((char *) send.data(), test.str().length() , "%s" ,test.str().c_str()) ;
+  zmq::message_t send(test.str().length()+1);
+  snprintf ((char *) send.data(), test.str().length()+1 , "%s" ,test.str().c_str()) ;
  
   return Ireceive.send(send);
 
@@ -105,28 +105,23 @@ int Utilities::UpdateConnections(std::string ServiceName, zmq::socket_t* sock, s
 Thread_args* Utilities::CreateThread(std::string ThreadName,  void (*func)(Thread_args*), Thread_args* args){
   
   if(Threads.count(ThreadName)==0){
-    std::cout<<"d-1 "<<args<<std::endl;
+    
     if(args==0) args = new Thread_args();  
-    std::cout<<"d0"<<std::endl;
-    std::cout<<"d0.01"<<args->context<<std::endl;
-    std::cout<<"d0.02"<<context<<std::endl;
+    
     args->context=context;
-    std::cout<<"d0.1"<<std::endl;
     args->ThreadName=ThreadName;
-    std::cout<<"d0.2"<<std::endl;
     args->func=func;
-    std::cout<<"d0.3"<<std::endl;
     args->running=true;
-    std::cout<<"d1"<<std::endl;
+    
     pthread_create(&(args->thread), NULL, Utilities::Thread, args);
-    std::cout<<"d2"<<std::endl;    
+    
     args->sock=0;
-    std::cout<<"d3"<<std::endl;
     Threads[ThreadName]=args;
-    std::cout<<"d4"<<std::endl;
-  }
+    
+}
+
   else args=0;
-  std::cout<<"d5"<<std::endl;
+
   return args;
   
 }

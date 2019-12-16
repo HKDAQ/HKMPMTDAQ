@@ -33,7 +33,7 @@ struct Thread_args{
     kill=false;
   }      
 
-  ~Thread_args(){
+  virtual ~Thread_args(){
     running =false;
     kill=true;
     delete sock;
@@ -71,14 +71,14 @@ class Utilities{
     std::stringstream tmp;
     tmp<<pointer;
 
-    zmq::message_t message(tmp.str().length());
-    snprintf ((char *) message.data(), tmp.str().length() , "%s" , tmp.str().c_str()) ;
+    zmq::message_t message(tmp.str().length()+1);
+    snprintf ((char *) message.data(), tmp.str().length()+1 , "%s" , tmp.str().c_str()) ;
 
    return sock->send(message);  
 
   }
   
-  template<typename T> bool ReceivePointer(zmq::socket_t* sock, T* pointer){  
+  template<typename T> bool ReceivePointer(zmq::socket_t* sock, T*& pointer){  
    
     zmq::message_t message;
     
@@ -86,7 +86,8 @@ class Utilities{
       
       std::istringstream iss(static_cast<char*>(message.data()));
       
-      long long unsigned int tmpP;
+      //      long long unsigned int tmpP;
+      unsigned long tmpP;
       iss>>std::hex>>tmpP;
       
       pointer=reinterpret_cast<T*>(tmpP);
