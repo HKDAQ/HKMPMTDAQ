@@ -45,7 +45,7 @@ lib/libToolChain.so: $(ToolDAQPath)/ToolDAQFramework/src/ToolChain/* | lib/libLo
 
 
 clean: 
-	@echo -e "\e[38;5;51m\n*************** Cleaning up ****************\e[0m"
+	@echo -e "\e[38;5;201m\n*************** Cleaning up ****************\e[0m"
 	rm -f include/*.h
 	rm -f lib/*.so
 	rm -f main
