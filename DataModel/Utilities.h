@@ -68,7 +68,8 @@ class Utilities{
 
   template <typename T>  bool KillThread(T* pointer){
     
-    return KillThread((Thread_args*) pointer);
+    Thread_args* tmp=pointer;
+    return KillThread(tmp);
 
   }
 

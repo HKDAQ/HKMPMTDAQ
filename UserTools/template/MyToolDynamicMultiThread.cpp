@@ -15,14 +15,14 @@ bool MyToolDynamicMultiThread::Initialise(std::string configfile, DataModel &dat
 
   m_data= &data;
 
-  m_threadcount=1;
+  threadcount=1;
 
   m_util=new Utilities(m_data->context);
 
   m_threadnum=0;
   CreateThread();
   
-  m_freethreads=m_threadcount;
+  m_freethreads=threadcount;
   
     
   
@@ -54,7 +54,7 @@ bool MyToolDynamicMultiThread::Execute(){
   if(m_freethreads<1) CreateThread();
   if(m_freethreads>1) DeleteThread(lastfree);
   
-  std::cout<<"free threads="<<m_freethreads<<":"<<m_threadcount<<std::endl;
+  std::cout<<"free threads="<<m_freethreads<<":"<<args.size()<<std::endl;
   
   sleep(1);
   
@@ -64,13 +64,7 @@ bool MyToolDynamicMultiThread::Execute(){
 
 bool MyToolDynamicMultiThread::Finalise(){
 
-  for(int i=0;i<m_threadcount;i++){
-    m_util->KillThread(args.at(i));
-  
-
-    delete args.at(i);
-    args.at(i)=0;
-  }
+  for(int i=0;i<args.size();i++) m_util->KillThread(args.at(i));
   
   args.clear();
   
@@ -112,7 +106,7 @@ void MyToolDynamicMultiThread::Thread(Thread_args* arg){
     args->message="Hello";
     sleep(10);
 
+    args->busy=0;
   }
-  args->busy=0;
 
 }

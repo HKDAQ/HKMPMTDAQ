@@ -41,7 +41,6 @@ class MyToolMultiThread: public Tool {
   Utilities* m_util;
   std::vector<MyToolMultiThread_args*> args;
 
-  int m_threadcount;
   int m_freethreads;
 
 };

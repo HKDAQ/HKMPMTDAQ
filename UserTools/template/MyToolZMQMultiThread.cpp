@@ -15,7 +15,8 @@ bool MyToolZMQMultiThread::Initialise(std::string configfile, DataModel &data){
 
   m_data= &data;
 
-  if(!m_variables.Get("Threads",m_threadcount)) m_threadcount=4;
+  int threadcount=0;
+  if(!m_variables.Get("Threads",threadcount)) threadcount=4;
 
   m_util=new Utilities(m_data->context);
 
@@ -33,7 +34,7 @@ bool MyToolZMQMultiThread::Initialise(std::string configfile, DataModel &data){
   items[1].events=ZMQ_POLLIN;
   items[1].revents=0;
   
-  for(int i=0;i<m_threadcount;i++){
+  for(int i=0;i<threadcount;i++){
     MyToolZMQMultiThread_args* tmparg=new MyToolZMQMultiThread_args();   
     args.push_back(tmparg);
     std::stringstream tmp;
@@ -41,7 +42,7 @@ bool MyToolZMQMultiThread::Initialise(std::string configfile, DataModel &data){
     m_util->CreateThread(tmp.str(), &Thread, args.at(i));
   }
   
-  m_freethreads=m_threadcount;
+  m_freethreads=threadcount;
   
     
   
@@ -78,7 +79,7 @@ bool MyToolZMQMultiThread::Execute(){
 
   }
 
-  std::cout<<"free threads="<<m_freethreads<<":"<<m_threadcount<<std::endl;
+  std::cout<<"free threads="<<m_freethreads<<":"<<args.size()<<std::endl;
   sleep(1);
   return true;
 }
@@ -86,14 +87,8 @@ bool MyToolZMQMultiThread::Execute(){
 
 bool MyToolZMQMultiThread::Finalise(){
 
-  for(int i=0;i<m_threadcount;i++){
-    m_util->KillThread(args.at(i));
-  
-
-    delete args.at(i);
-    args.at(i)=0;
-  }
-  
+  for(int i=0;i<args.size();i++)  m_util->KillThread(args.at(i));
+    
   args.clear();
   
   delete m_util;

@@ -43,7 +43,6 @@ class MyToolZMQMultiThread: public Tool {
   zmq::socket_t* ManagerSend;
   zmq::socket_t* ManagerReceive;
 
-  int m_threadcount;
   int m_freethreads;
 
 };

@@ -44,9 +44,9 @@ class MyToolDynamicMultiThread: public Tool {
   Utilities* m_util;
   std::vector<MyToolDynamicMultiThread_args*> args;
 
-  int m_threadcount;
   int m_freethreads;
   unsigned long m_threadnum;
+
 };
 
 
