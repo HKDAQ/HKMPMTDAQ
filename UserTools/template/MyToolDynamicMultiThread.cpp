@@ -15,14 +15,12 @@ bool MyToolDynamicMultiThread::Initialise(std::string configfile, DataModel &dat
 
   m_data= &data;
 
-  threadcount=1;
-
   m_util=new Utilities(m_data->context);
 
   m_threadnum=0;
   CreateThread();
   
-  m_freethreads=threadcount;
+  m_freethreads=1;
   
     
   
