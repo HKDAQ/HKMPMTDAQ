@@ -94,6 +94,12 @@ bool MyToolZMQMultiThread::Finalise(){
   delete m_util;
   m_util=0;
 
+  delete ManagerSend;
+  ManagerSend=0;
+
+  delete ManagerReceive;
+  ManagerReceive=0;
+
   return true;
 }
 
