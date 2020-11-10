@@ -6,6 +6,16 @@
 
 #include "Tool.h"
 
+/**
+ * \struct MyToolMultiThread_args
+ *
+ * This is a struct to place data you want your thread to acess or exchange with it. The idea is the datainside is only used by the thread and so will be thread safe
+ *
+ * $Author: B.Richards $
+ * $Date: 2019/05/28 10:44:00 $
+ * Contact: b.richards@qmul.ac.uk
+ */
+
 struct MyToolMultiThread_args:Thread_args{
 
   MyToolMultiThread_args();
@@ -18,12 +28,13 @@ struct MyToolMultiThread_args:Thread_args{
 /**
  * \class MyToolMultiThread
  *
- * This is a balnk template for a Tool used by the script to generate a new custom tool. Please fill out the descripton and author information.
+ * This is a template for a Tool That employs mulitple threads. Please fill out the descripton and author information.
  *
  * $Author: B.Richards $
  * $Date: 2019/05/28 10:44:00 $
  * Contact: b.richards@qmul.ac.uk
  */
+
 class MyToolMultiThread: public Tool {
 
 
@@ -37,11 +48,11 @@ class MyToolMultiThread: public Tool {
 
  private:
 
-  static void Thread(Thread_args* arg);
-  Utilities* m_util;
-  std::vector<MyToolMultiThread_args*> args;
+  static void Thread(Thread_args* arg); ///< Function to be run by the thread in a loop. Make sure not to block in it
+  Utilities* m_util; ///< Pointer to utilities class to help with threading
+  std::vector<MyToolMultiThread_args*> args; ///< Vector of thread args (also holds pointers to the threads)
 
-  int m_freethreads;
+  int m_freethreads; ///< Keeps track of free threads
 
 };
 

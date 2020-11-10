@@ -9,7 +9,7 @@
 /**
  * \class MyToolServiceAdd
  *
- * This is a balnk template for a Tool used by the script to generate a new custom tool. Please fill out the descripton and author information.
+ * This is a template for a Tool to publish a service via ToolDAQ dynamic service discovery. Please fill out the descripton and author information.
 *
 * $Author: B.Richards $
 * $Date: 2019/05/28 10:44:00 $
@@ -28,9 +28,9 @@ class MyToolServiceAdd: public Tool {
 
  private:
 
-  Utilities* m_util;
-  zmq::socket_t* sock;
-  int m_port;
+  Utilities* m_util;  ///< Pointer to utilities class to help with threading
+  zmq::socket_t* sock;  ///< zmq socket pointer for socket to advertise
+  int m_port;  ///< Port to advertise
 
 };
 

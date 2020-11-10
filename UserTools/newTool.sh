@@ -20,6 +20,12 @@ then
     mv Factory/Factory.cpp.tmp Factory/Factory.cpp
 else
     
-    echo "Error no name given: usage = \"./newTool.sh ToolNAME TemplateNAME\"  if TemplateName is blank then blank template is used"
-    
+    echo -e "\e[38;5;196mError no name given \e[0m: usage = \"./newTool.sh \e[38;5;226m <ToolNAME> \e[38;5;46m <TemplateNAME> \e[0m\"  if <TemplateName> is blank then blank template is used"
+    echo -e "Valid tools template names are:"
+    echo -e "\e[38;5;46m<BLANK>"
+    for name in `ls template/ |grep '\.h' |grep -v "h~" |sed s:"\.h"::|sed s:"MyTool"::`
+    do
+        echo $name
+    done    
+    echo -e "\e[0m"
 fi
