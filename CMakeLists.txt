@@ -32,7 +32,7 @@ FILE(COPY ${PROJECT_SOURCE_DIR}/DataModel DESTINATION ${PROJECT_BINARY_DIR}/)
 FILE(COPY ${PROJECT_SOURCE_DIR}/Setup.sh DESTINATION ${PROJECT_BINARY_DIR}/)
 endif()
 
-include_directories(${PROJECT_BINARY_DIR}/Datamodel ${BOOST_INC} ${ZMQ_INC} ${DATAMODEL_INC} ${MYTOOLS_INC} ${TOOLDAQ_PATH}/ToolDAQFramework/include)
+include_directories(${PROJECT_BINARY_DIR}/DataModel ${BOOST_INC} ${ZMQ_INC} ${DATAMODEL_INC} ${MYTOOLS_INC} ${TOOLDAQ_PATH}/ToolDAQFramework/include ${TOOLDAQ_PATH}/ToolDAQFramework/src/Tool ${TOOLDAQ_PATH}/ToolDAQFramework/src/ToolChain  ${TOOLDAQ_PATH}/ToolDAQFramework/src/Logging  ${TOOLDAQ_PATH}/ToolDAQFramework/src/Store  ${TOOLDAQ_PATH}/ToolDAQFramework/src/ServiceDiscovery/)
 link_directories("${PROJECT_BINARY_DIR}/lib" ${BOOST_LIB_PATH} ${ZMQ_LIB_PATH} ${DATAMODEL_LIB_PATH} ${MYTOOLS_LIB_PATH} ${TOOLDAQ_PATH}/ToolDAQFramework/lib)
 
 MACRO(HEADER_DIRECTORIES return_list)
@@ -52,11 +52,26 @@ include_directories(${header_list})
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
+file(GLOB_RECURSE STORE_SRC RELATIVE ${CMAKE_SOURCE_DIR} "${TOOLDAQ_PATH}/ToolDAQFramework/src/Store/*.cpp")
+add_library(Store SHARED ${STORE_SRC})
+
+file(GLOB_RECURSE LOGGING_SRC RELATIVE ${CMAKE_SOURCE_DIR} "${TOOLDAQ_PATH}/ToolDAQFramework/src/Logging/*.cpp")
+add_library(Logging SHARED ${LOGGING_SRC})
+
+file(GLOB_RECURSE SERVICEDISCOVERY_SRC RELATIVE ${CMAKE_SOURCE_DIR} "${TOOLDAQ_PATH}/ToolDAQFramework/src/ServiceDiscovery/*.cpp")
+add_library(ServiceDiscovery SHARED ${SERVICEDISCOVERY_SRC})
+
 file(GLOB_RECURSE DATAMODEL_SRC RELATIVE ${CMAKE_BINARY_DIR} "DataModel/*.cpp")
 add_library(DataModel SHARED ${DATAMODEL_SRC})
 
 file(GLOB_RECURSE MYTOOLS_SRC RELATIVE ${CMAKE_BINARY_DIR} "UserTools/*.cpp")
 add_library(MyTools SHARED ${MYTOOLS_SRC})
+
+include_directories(${TOOLDAQ_PATH}/ToolDAQFramework/src/Logging)
+
+file(GLOB_RECURSE TOOLCHAIN_SRC RELATIVE ${CMAKE_SOURCE_DIR} "${TOOLDAQ_PATH}/ToolDAQFramework/src/ToolChain/*.cpp")
+add_library(ToolChain SHARED ${TOOLCHAIN_SRC})
+
 
 add_executable (main ${PROJECT_SOURCE_DIR}/src/main.cpp)
 target_link_libraries (main Store Logging ToolChain ServiceDiscovery MyTools DataModel ${ZMQ_LIBS} ${BOOST_LIBS} ${DATAMODEL_LIBS} ${MYTOOLS_LIBS})
