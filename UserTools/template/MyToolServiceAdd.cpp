@@ -9,7 +9,9 @@ bool MyToolServiceAdd::Initialise(std::string configfile, DataModel &data){
   //m_variables.Print();
 
   m_data= &data;
+  m_log= m_data->Log;
 
+  if(!m_variables.Get("verbose",m_verbose)) m_verbose=1;
   if(!m_variables.Get("Port",m_port)) m_port=5555;
 
   m_util=new Utilities(m_data->context);

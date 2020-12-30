@@ -28,8 +28,6 @@ class DummyTool: public Tool {
 
  private:
 
-  int m_verbose;
-
 };
 
 
