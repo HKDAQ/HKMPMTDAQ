@@ -13,7 +13,6 @@ bool DummyTool::Initialise(std::string configfile, DataModel &data){
 
   if(!m_variables.Get("verbose",m_verbose)) m_verbose=1;  
  
-  m_verbose=6;
   Log("test 1",1,m_verbose);
 
   return true;
@@ -22,16 +21,17 @@ bool DummyTool::Initialise(std::string configfile, DataModel &data){
 
 bool DummyTool::Execute(){
 
-  Log("test 2",2,m_verbose);
-  Log("test 2",5,5);
-  int a=2;
-  *m_log<<red<<"hello"<<green<<a<<"hi"<<std::endl<<"hello"<<a<<a<<"oooyeh"<<std::endl;
-  *m_log<<MsgL(2,6)<<yellow<<"hello"<<green<<a<<"hi"<<std::endl<<"hello"<<a<<a<<"oooyeh"<<std::endl;
-  *m_log<<ML(2)<<pink<<"hello"<<green<<a<<"hi"<<std::endl<<"hello"<<a<<a<<"oooyeh"<<std::endl;
-  *m_log<<cyan<<"hello"<<green<<a<<"hi"<<std::endl<<"hello"<<a<<a<<"oooyeh"<<std::endl;
-  *m_log<<MsgL(1,1);
+  // Dummy test of various printout sytles and techniques
+
+  Log("test 2",1,m_verbose);
+  Log("test 3",1,5);
+  *m_log<<red<<"test 4 "<<green<<"test 5 "<<std::endl<<"test 6 "<<std::endl;
+  *m_log<<MsgL(2,6)<<yellow<<"test 7 "<<std::endl<<"test 8 "<<std::endl;
+  *m_log<<ML(2)<<pink<<"test 9 "<<std::endl<<"test 10 "<<std::endl;
+  *m_log<<blue<<"test 11 "<<std::endl<<"test 12 "<<std::endl;
   MLC();
-  return true;
+ 
+ return true;
 }
 
 
