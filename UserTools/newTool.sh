@@ -83,7 +83,7 @@ fi
 		then
 		    echo "  if (tool==\""$dir"\") ret=new "$dir";" >>Factory/Factory.cpp.tmp
 		fi
-		echo $line >>Factory/Factory.cpp.tmp
+		echo "$line" >>Factory/Factory.cpp.tmp
 	    done < Factory/Factory.cpp
 	    mv Factory/Factory.cpp.tmp Factory/Factory.cpp
 	fi
