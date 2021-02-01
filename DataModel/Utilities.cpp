@@ -241,8 +241,8 @@ bool Utilities::KillThread(Thread_args* &args){
     args->kill=true;
     
     pthread_join(args->thread, NULL);
-    delete args;
-    args=0;
+    //delete args;
+    //args=0;
     
     
   }

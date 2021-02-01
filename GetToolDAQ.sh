@@ -68,6 +68,7 @@ do
 	    boostflag=0
 	    zmq=0
 	    final=0
+	    rootflag=1
             ;;
 	
 	

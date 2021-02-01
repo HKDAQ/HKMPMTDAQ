@@ -23,6 +23,12 @@ struct MyToolZMQMultiThread_args:Thread_args{
   MyToolZMQMultiThread_args();
   ~MyToolZMQMultiThread_args();
 
+  zmq::socket_t* ThreadReceive;
+  zmq::socket_t* ThreadSend;
+    
+  zmq::pollitem_t initems[1];
+  zmq::pollitem_t outitems[1];
+
 };
 
 /**

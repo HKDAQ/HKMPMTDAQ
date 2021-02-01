@@ -38,7 +38,22 @@ bool MyToolZMQMultiThread::Initialise(std::string configfile, DataModel &data){
   items[1].revents=0;
   
   for(int i=0;i<threadcount;i++){
+
     MyToolZMQMultiThread_args* tmparg=new MyToolZMQMultiThread_args();   
+
+    tmparg->ThreadReceive=new  zmq::socket_t(*m_data->context,ZMQ_PULL); 
+    tmparg->ThreadReceive->connect("inproc://MyToolZMQMultiThreadSend");
+    tmparg->ThreadSend=new  zmq::socket_t(*m_data->context,ZMQ_PUSH);
+    tmparg->ThreadSend->connect("inproc://MyToolZMQMultiThreadReceive");
+    tmparg->initems[0].socket=*(tmparg->ThreadReceive);
+    tmparg->initems[0].fd=0;
+    tmparg->initems[0].events=ZMQ_POLLIN;
+    tmparg->initems[0].revents=0;
+    tmparg->outitems[0].socket=*(tmparg->ThreadSend);
+    tmparg->outitems[0].fd=0;
+    tmparg->outitems[0].events=ZMQ_POLLOUT;
+    tmparg->outitems[0].revents=0;
+
     args.push_back(tmparg);
     std::stringstream tmp;
     tmp<<"T"<<i; 
@@ -90,8 +105,16 @@ bool MyToolZMQMultiThread::Execute(){
 
 bool MyToolZMQMultiThread::Finalise(){
 
-  for(int i=0;i<args.size();i++)  m_util->KillThread(args.at(i));
-    
+  for(int i=0;i<args.size();i++) {
+
+    m_util->KillThread(args.at(i));
+    delete args.at(i)->ThreadSend;
+    args.at(i)->ThreadSend=0;
+    delete args.at(i)->ThreadReceive;
+    args.at(i)->ThreadReceive=0;
+
+  }
+
   args.clear();
   
   delete m_util;
@@ -109,32 +132,24 @@ bool MyToolZMQMultiThread::Finalise(){
 void MyToolZMQMultiThread::Thread(Thread_args* arg){
 
   MyToolZMQMultiThread_args* args=reinterpret_cast<MyToolZMQMultiThread_args*>(arg);
-
-  zmq::socket_t ThreadReceive(*args->context,ZMQ_PULL);
-  ThreadReceive.connect("inproc://MyToolZMQMultiThreadSend");
-  zmq::socket_t ThreadSend(*args->context,ZMQ_PUSH);
-  ThreadSend.connect("inproc://MyToolZMQMultiThreadReceive");
   
-  zmq::pollitem_t initems[1] = {{ThreadReceive,0,ZMQ_POLLIN,0}};
-  zmq::pollitem_t outitems[1] = {{ThreadSend,0,ZMQ_POLLOUT,0}};
-  
-  zmq::poll(&initems[0], 1, 100);
+  zmq::poll(&(args->initems[0]), 1, 100);
 
-  if ((initems[0].revents & ZMQ_POLLIN)){
+  if ((args->initems[0].revents & ZMQ_POLLIN)){
   
     zmq::message_t message;
-    ThreadReceive.recv(&message);
+    args->ThreadReceive->recv(&message);
     std::istringstream iss(static_cast<char*>(message.data()));
   
     sleep(10);
 
-    zmq::poll(&outitems[0], 1, 10000);
-    if ((outitems[0].revents & ZMQ_POLLOUT)){
+    zmq::poll(&(args->outitems[0]), 1, 10000);
+    if (args->outitems[0].revents & ZMQ_POLLOUT){
       
       std::string greeting="hello";
       zmq::message_t message(greeting.length()+1);
       snprintf ((char *) message.data(), greeting.length()+1 , "%s" , greeting.c_str()) ;
-      ThreadSend.send(message);
+      args->ThreadSend->send(message);
     }
     
   }
