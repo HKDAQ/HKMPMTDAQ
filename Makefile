@@ -1,6 +1,11 @@
 ToolDAQPath=ToolDAQ
 
-CXXFLAGS= -fPIC -O3 -Wpedantic # -g -DDEBUG
+CXXFLAGS=  -fPIC -Wpedantic -O3 # -g -lSegFault -rdynamic -DDEBUG
+# -Wl,--no-as-needed
+
+ifeq ($(MAKECMDGOALS),debug)
+CXXFLAGS+= -O1 -g -lSegFault -rdynamic -DDEBUG
+endif
 
 ZMQLib= -L $(ToolDAQPath)/zeromq-4.0.7/lib -lzmq 
 ZMQInclude= -I $(ToolDAQPath)/zeromq-4.0.7/include/ 
@@ -13,6 +18,8 @@ DataModelLib =
 
 MyToolsInclude =
 MyToolsLib = 
+
+debug: all
 
 all: lib/libStore.so lib/libLogging.so lib/libDataModel.so include/Tool.h lib/libMyTools.so lib/libServiceDiscovery.so lib/libToolChain.so main RemoteControl  NodeDaemon
 
