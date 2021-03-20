@@ -25,7 +25,7 @@ then
     then
 	
 	dialog --checklist "Activate or Deactivate Tools with <spacebar>, Enter for OK and ESC for Cancel:" 0 0 0 \
-	    `for Tool in \`ls */*.cpp | sed s:/:' ': | awk '{print $2}' | sed s:.cpp:: | grep -v Factory\`
+	    `for Tool in \`ls */*.cpp  | grep -v template/ | sed s:/:' ': | awk '{print $2}' | sed s:.cpp:: | grep -v Factory\`
 do
     fin=0
     for current in \`cat Factory/Factory.cpp | grep -v '/' |grep if| awk '{print $4}' | sed s:';':: \`
@@ -59,6 +59,7 @@ done` 2> tmptools
 	    do
 		echo "#include <$Tool.h>" >> Unity.h
 	    done
+	    touch Unity.h
 	    
 	    echo "#include \"Factory.h\"
 
@@ -82,7 +83,7 @@ Tool* ret=0;
 	
     else
 
-	dialog --radiolist "Activate or Deactivate Tools with <spacebar>, Enter for OK and ESC for Cancel:" 0 0 0 \
+	dialog --radiolist "Select backup with <spacebar>, Enter for OK and ESC for Cancel:" 0 0 0 \
 	    `for backup in \`ls *.bak.*\`
 	 do
 	echo $backup . off
