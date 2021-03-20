@@ -25,7 +25,7 @@ then
     then
 	
 	dialog --checklist "Activate or Deactivate Tools with <spacebar>, Enter for OK and ESC for Cancel:" 0 0 0 \
-	    `for Tool in \`ls */*.cpp  | grep -v template/ | sed s:/:' ': | awk '{print $2}' | sed s:.cpp:: | grep -v Factory\`
+	    `for Tool in \`ls */*.cpp | grep -v template/ | sed s:/:' ': | awk '{print $2}' | sed s:.cpp:: | grep -v Factory\`
 do
     fin=0
     for current in \`cat Factory/Factory.cpp | grep -v '/' |grep if| awk '{print $4}' | sed s:';':: \`
@@ -41,6 +41,12 @@ do
     then
         echo "$Tool $num off "
     fi
+    num=$(expr 1 + $num)
+done
+
+for Tool in \`ls InactiveTools/*/*.cpp | sed s:/:' ':g | awk '{print $3}' | sed s:.cpp:: \`
+do
+    echo "$Tool $num off "
     num=$(expr 1 + $num)
 done` 2> tmptools
 	
@@ -74,15 +80,45 @@ Tool* ret=0;
 	    
 	    echo "return ret;
 }" >> Factory/Factory.cpp
-	
-
+	    
+	    for dir in `ls */ | grep / | sed s:'/\:':: | grep -v Factory | grep -v template | grep -v InactiveTools`
+	    do
+		exists=0		
+		for Tool in `cat tmptools`		
+		do
+		    if [ $Tool == $dir ] 
+		    then
+			exists=1
+		    fi
+		done
+		
+		if [ $exists -eq 0 ]
+		then
+		    mv $dir InactiveTools/
+		fi
+	    done
+	    
+	    for dir in `ls InactiveTools/`
+            do
+                for Tool in `cat tmptools`
+                do
+                    if [ $Tool == $dir ]
+                    then
+                        mv InactiveTools/$dir ./
+                    fi
+                done
+		
+            done	
+	    
+	    
+	    
 	fi    
 	
 	rm -f tmptools
-	   
+	
 	
     else
-
+	
 	dialog --radiolist "Select backup with <spacebar>, Enter for OK and ESC for Cancel:" 0 0 0 \
 	    `for backup in \`ls *.bak.*\`
 	 do
@@ -110,6 +146,39 @@ Tool* ret=0;
 	fi
 
 	rm -f tmpbackup
+
+
+       for dir in `ls */ | grep / | sed s:'/\:':: | grep -v Factory | grep -v template | grep -v InactiveTools`
+            do
+                exists=0
+                for Tool in `cat Factory/Factory.cpp | grep -v '/' |grep if| awk '{print $4}' | sed s:';':: `
+                do
+                    if [ $Tool == $dir ]
+                    then
+                        exists=1
+                    fi
+                done
+
+                if [ $exists -eq 0 ]
+                then
+                    mv $dir InactiveTools/
+                fi
+            done
+
+            for dir in `ls InactiveTools/`
+            do
+                for Tool in `cat Factory/Factory.cpp | grep -v '/' |grep if| awk '{print $4}' | sed s:';':: `
+                do
+                    if [ $Tool == $dir ]
+                    then
+                        mv InactiveTools/$dir ./
+                    fi
+                done
+
+            done
+
+
+
     fi
     
 
