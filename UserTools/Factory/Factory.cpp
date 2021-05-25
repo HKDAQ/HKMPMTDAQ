@@ -8,5 +8,6 @@ if (tool=="DummyTool") ret=new DummyTool;
 if (tool=="Logger") ret=new Logger;
 if (tool=="Monitor") ret=new Monitor;
 if (tool=="SlowControl") ret=new SlowControl;
+
 return ret;
 }

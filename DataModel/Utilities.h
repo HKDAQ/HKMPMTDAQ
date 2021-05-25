@@ -84,7 +84,7 @@ class Utilities{
   Utilities(zmq::context_t* zmqcontext); ///< Simple constructor
   bool AddService(std::string ServiceName, unsigned int port, bool StatusQuery=false); ///< Broadcasts an available service (only in remote mode)
   bool RemoveService(std::string ServiceName); ///< Removes service broadcasts for a service
-  int UpdateConnections(std::string ServiceName, zmq::socket_t* sock, std::map<std::string,Store*> &connections); ///< Dynamically connects a socket tp services broadcast with a specific name 
+  int UpdateConnections(std::string ServiceName, zmq::socket_t* sock, std::map<std::string,Store*> &connections, std::string port=""); ///< Dynamically connects a socket tp services broadcast with a specific name 
   Thread_args* CreateThread(std::string ThreadName,  void (*func)(std::string));  //func = &my_int_func; ///< Create a simple thread that has string exchange with main thread
   Thread_args* CreateThread(std::string ThreadName,  void (*func)(Thread_args*), Thread_args* args); ///< Create a thread with more complicated data exchange definned by arguments
   bool MessageThread(Thread_args* args, std::string Message, bool block=true); ///< Send simple string to String thread
