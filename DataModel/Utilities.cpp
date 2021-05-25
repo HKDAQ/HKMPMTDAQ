@@ -39,7 +39,7 @@ bool Utilities::RemoveService(std::string ServiceName){
 
 }
 
-int Utilities::UpdateConnections(std::string ServiceName, zmq::socket_t* sock, std::map<std::string,Store*> &connections){
+int Utilities::UpdateConnections(std::string ServiceName, zmq::socket_t* sock, std::map<std::string,Store*> &connections, std::string port){
 
     boost::uuids::uuid m_UUID=boost::uuids::random_generator()();
     long msg_id=0;
@@ -74,11 +74,10 @@ int Utilities::UpdateConnections(std::string ServiceName, zmq::socket_t* sock, s
       std::string type;
       std::string uuid;
       std::string ip;
-      std::string port;
       service->Get("msg_value",type);
       service->Get("uuid",uuid);
       service->Get("ip",ip);
-      service->Get("remote_port",port);
+      if(port=="") service->Get("remote_port",port);
       std::string tmp=ip + ":" + port;
 
       //if(type == ServiceName && connections.count(uuid)==0){
