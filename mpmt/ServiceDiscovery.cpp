@@ -1,7 +1,20 @@
 #include <ServiceDiscovery.h>
 
 
-ServiceDiscovery::ServiceDiscovery(std::string address, int port, std::string UUID, std::string service_name, int remote_port, int &return_sock){
+ServiceDiscovery::ServiceDiscovery(Store &variables, int &return_sock){
+
+
+  std::string address;
+  int port;
+  std::string UUID;
+  std::string service_name;
+  int remote_port;
+
+  variables.Get("service_discovery_address", address);
+  variables.Get("service_discovery_port", port);
+  variables.Get("UUID", UUID);
+  variables.Get("service_name", service_name);
+  variables.Get("slow_control_port", remote_port);
 
   
   // set up socket //                                       

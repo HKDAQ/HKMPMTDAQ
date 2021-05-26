@@ -18,19 +18,19 @@ class ServiceDiscovery{
 
 public:
 
-  ServiceDiscovery(std::string address, int port, std::string UUID, std::string service_name, int remote_port, int &return_sock);
-void Send(std::string status);
+  ServiceDiscovery(Store &variables, int &return_sock);
+  void Send(std::string status);
+  
+ private:
 
-Store message;
+  
+  struct sockaddr_in addr;      
+  int addrlen, sock, cnt;
+  struct ip_mreq mreq;
 
-private:
-
-struct sockaddr_in addr;      
-int addrlen, sock, cnt;
-struct ip_mreq mreq;
-
-long msg_id;
-
+  long msg_id;
+  Store message;
+  
 };
 
 

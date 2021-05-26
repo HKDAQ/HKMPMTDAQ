@@ -10,9 +10,10 @@ class Monitor{
 
  public:
 
-  Monitor(zmq::socket_t &insock);
+  Monitor(zmq::socket_t &insock, Store &variables);
   bool Send(int state);
   void CollectData();
+  std::string Status();
 
  private:
 

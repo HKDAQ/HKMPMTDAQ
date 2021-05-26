@@ -13,9 +13,9 @@ class Logger{
 
  public:
 
-  Logger(zmq::socket_t &insock, boost::posix_time::time_duration period, std::string UUID, std::string service_name);
+  Logger(zmq::socket_t &insock, Store &variables);
   void Send(std::string message);
-
+  
  private:
   
   zmq::socket_t* sock;

@@ -11,7 +11,7 @@ class SlowControl{
 
  public:
 
-  SlowControl(zmq::socket_t &insock, std::string inUUID, Logger &inlogger);
+  SlowControl(zmq::socket_t &insock, Logger &inlogger, Store &variables);
   std::string Command(std::string command, int &state);
   bool Config ();
   bool Send();

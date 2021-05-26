@@ -1,11 +1,22 @@
 #include <SlowControl.h>
 
 
-SlowControl::SlowControl(zmq::socket_t &insock, std::string inUUID, Logger &inlogger){
+SlowControl::SlowControl(zmq::socket_t &insock, Logger &inlogger, Store &variables){
 
   sock=&insock;
-  UUID=inUUID;
+
   logger=&inlogger;
+  
+  std::string slow_control_sock_port;
+  int slow_control_timeout;
+  
+  variables.Get("UUID", UUID);
+  variables.Get("slow_control_sock_port", slow_control_sock_port);
+  variables.Get("slow_control_timeout", slow_control_timeout);
+
+  sock->bind(slow_control_sock_port.c_str());
+  sock->setsockopt(ZMQ_RCVTIMEO, slow_control_timeout);
+  sock->setsockopt(ZMQ_SNDTIMEO, slow_control_timeout);
 
 }
 
@@ -60,24 +71,24 @@ bool SlowControl::Receive(int &state){
 
 	  if(type=="Config"){
 	    ret.Set("AKN",Config());
-	    *ret["msg_value"]="Received Config";
+	    ret.Set("msg_value", "Received Config");
 	    if(state==1) state=2;
 	  }
 	  else if(type=="Command"){
 	    
 	    std::string command="";
 	    if(configuration_variables.Get("msg_value",command)){
-	      ret.Set("msg_value",Command(command, state));
-	      ret.Set("AKN",true);
+	      ret.Set("msg_value", Command(command, state));
+	      ret.Set("AKN", true);
 	    }
 	    else{
-	      *ret["msg_value"]="Error!!! No msg_value/Command in JSON";
+	      ret.Set("msg_value", "Error!!! No msg_value/Command in JSON");
 	      ret.Set("AKN",false);
 	      logger->Send("Warning!!! No slow control msg_value/Command in JSON");
 	    }
 	  }
 	  else{
-	    *ret["msg_value"]="Error!!! Unknown msg_type";
+	    ret.Set("msg_value", "Error!!! Unknown msg_type");
 	    ret.Set("AKN",false);
 	    logger->Send("Warning!!! Unknown slow control msg_type");
 	  }
@@ -183,8 +194,8 @@ bool SlowControl::Request(){
 
   Store tmp;
   tmp.Set("uuid",UUID);  
-  *tmp["msg_type"]="Request";
-  *tmp["msg_value"]="MPMT"; 
+  tmp.Set("msg_type", "Request");
+  tmp.Set("msg_value", "MPMT"); 
   tmp.Set("time",boost::posix_time::to_simple_string(boost::posix_time::second_clock::universal_time()));   
 
 

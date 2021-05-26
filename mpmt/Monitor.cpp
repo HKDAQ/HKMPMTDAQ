@@ -1,8 +1,14 @@
 #include <Monitor.h>
 
-Monitor::Monitor(zmq::socket_t &insock){
+Monitor::Monitor(zmq::socket_t &insock, Store &variables){
 
   sock=&insock;
+
+  std::string monitor_sock_port;
+
+  variables.Get("monitor_sock_port",monitor_sock_port);
+
+  sock->bind(monitor_sock_port.c_str());
 
 }
 
@@ -19,10 +25,14 @@ bool Monitor::Send(int state){
 }
 
 
-
-
 void Monitor::CollectData(){
 
   monitoring_data.Set("status","Good");    
+
+}
+
+std::string Monitor::Status(){
+
+  return "Good";
 
 }
