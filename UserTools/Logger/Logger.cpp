@@ -31,9 +31,21 @@ bool Logger::Execute(){
   if(logger_sock->recv(&msg, ZMQ_NOBLOCK)){
 
     std::istringstream iss(static_cast<char*>(msg.data()));
-    
+
+    Store tmp;
+    tmp.JsonParser(iss.str());
+    std::string from,uuid,time,message; 
+    tmp.Get("From",from);
+    tmp.Get("UUID",uuid);
+    tmp.Get("Time",time);
+    message=*tmp["msg"];
+
+   
     std::cout<<blue<<"received log message:"<<std::endl;
-    std::cout<<iss.str()<<plain<<std::endl;
+    std::cout<<"From: "<<from<<","<<uuid<<std::endl;
+    std::cout<<"Time: "<<time<<std::endl;                 
+    std::cout<<"Msg: "<<message<<plain<<std::endl<<std::endl;              
+ 
 
   }
 

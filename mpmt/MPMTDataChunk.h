@@ -12,7 +12,7 @@ class MPMTDataChunk{
 
  public:
 
-  MPMTDataChunk(std::string inUUID);
+  MPMTDataChunk(std::string inUUID="");
   bool Send(zmq::socket_t* sock);
   bool Receive(zmq::socket_t* sock);
     

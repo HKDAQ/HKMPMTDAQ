@@ -1,18 +1,18 @@
 #include <SlowControl.h>
 
 
-SlowControl::SlowControl(zmq::socket_t &insock, Logger &inlogger, Store &variables){
+SlowControl::SlowControl(zmq::socket_t &insock, Logger &inlogger, Store &invariables){
 
   sock=&insock;
-
+  variables=&invariables;
   logger=&inlogger;
   
   std::string slow_control_sock_port;
   int slow_control_timeout;
   
-  variables.Get("UUID", UUID);
-  variables.Get("slow_control_sock_port", slow_control_sock_port);
-  variables.Get("slow_control_timeout", slow_control_timeout);
+  variables->Get("UUID", UUID);
+  variables->Get("slow_control_sock_port", slow_control_sock_port);
+  variables->Get("slow_control_timeout", slow_control_timeout);
 
   sock->bind(slow_control_sock_port.c_str());
   sock->setsockopt(ZMQ_RCVTIMEO, slow_control_timeout);
@@ -52,7 +52,8 @@ bool SlowControl::Send(){
 }
 
 
-bool SlowControl::Receive(int &state){
+bool SlowControl::Receive(){
+
 
   zmq::message_t* identity= new zmq::message_t;
   if(sock->recv(identity)){
@@ -72,13 +73,15 @@ bool SlowControl::Receive(int &state){
 	  if(type=="Config"){
 	    ret.Set("AKN",Config());
 	    ret.Set("msg_value", "Received Config");
-	    if(state==1) state=2;
+	    int state=0;
+	    variables->Get("state",state);
+	    if(state==1)  variables->Set("state","2");
 	  }
 	  else if(type=="Command"){
 	    
 	    std::string command="";
 	    if(configuration_variables.Get("msg_value",command)){
-	      ret.Set("msg_value", Command(command, state));
+	      ret.Set("msg_value", Command(command));
 	      ret.Set("AKN", true);
 	    }
 	    else{
@@ -100,7 +103,7 @@ bool SlowControl::Receive(int &state){
 	  
 	  ret.Set("uuid",UUID);
 	  ret.Set("msg_id",msg_id);
-	  ret.Set("recv_time",boost::posix_time::to_simple_string(boost::posix_time::second_clock::universal_time()));    
+	  ret.Set("recv_time",boost::posix_time::to_iso_extended_string(boost::posix_time::second_clock::universal_time()));    
 
 	  std::vector<zmq::message_t*> reply;
 	  reply.push_back(identity); 
@@ -126,9 +129,12 @@ bool SlowControl::Receive(int &state){
   return true;
 }
 
-std::string SlowControl::Command (std::string command, int &state){
+std::string SlowControl::Command (std::string command){
 
   std::string ret="Warning!!! unknown Command received: "+command;
+
+  int state=0;
+  variables->Get("state", state);
 
   if(command=="Start"){
     if(state==2) state=3;
@@ -146,15 +152,13 @@ std::string SlowControl::Command (std::string command, int &state){
     state=1;
     ret="Initialising";
   }
-  else if(command=="Status"){
-    std::stringstream tmp;
-    tmp<<"Status is: "<<"Good"<< ", state is: "<<state;
-    ret=tmp.str(); 
-  }
+  else if(command=="Status") variables->Get("status",ret);
   else if(command=="?"){
     if(state==1) ret="Avaiable commands are: Stop, Status, ?";
     else ret="Avaiable commands are: Start, Pause, Stop, Init, Status, ?";    
   }
+
+  variables->Set("state",state);
   
   return ret;
   
@@ -162,7 +166,7 @@ std::string SlowControl::Command (std::string command, int &state){
  
 bool SlowControl::Config (){
 
-  configuration_variables.Print();
+  //  configuration_variables.Print();
 
   return true;
 
@@ -196,7 +200,7 @@ bool SlowControl::Request(){
   tmp.Set("uuid",UUID);  
   tmp.Set("msg_type", "Request");
   tmp.Set("msg_value", "MPMT"); 
-  tmp.Set("time",boost::posix_time::to_simple_string(boost::posix_time::second_clock::universal_time()));   
+  tmp.Set("time",boost::posix_time::to_iso_extended_string(boost::posix_time::second_clock::universal_time()));   
 
 
   reply1.push_back(tmp.MakeMsg());

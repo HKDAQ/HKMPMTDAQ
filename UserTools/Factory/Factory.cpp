@@ -9,5 +9,6 @@ if (tool=="Logger") ret=new Logger;
 if (tool=="Monitor") ret=new Monitor;
 if (tool=="SlowControl") ret=new SlowControl;
 
+  if (tool=="DataReceiver") ret=new DataReceiver;
 return ret;
 }

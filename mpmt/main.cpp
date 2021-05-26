@@ -46,12 +46,15 @@ int main(int argc, char *argv[]){
   std::string monitor_sock_port="tcp://*:33333";
   int monitor_send_period=10;
 
-  std::string data_sock_port="tcp://*:4444";
+  std::string data_sock_port="tcp://*:44444";
   int data_timeout=100;
   int resend_period= 10;
   int resend_attempts=10;
-  int queue_warning_limit=8000;
-  int queue_max_size=10000;
+  int queue_warning_limit=300;
+  int queue_max_size=500;
+  int data_chunk_size_ms=100;
+  int fake_data_rate=5700;
+
 
   //////////////////////////////////////////////////////
 
@@ -86,6 +89,7 @@ int main(int argc, char *argv[]){
   if(!variables.Get("resend_attempts",  resend_attempts)) variables.Set("resend_attempts", resend_attempts);
   if(!variables.Get("queue_warning_limit", queue_warning_limit)) variables.Set("queue_warning_limit", queue_warning_limit);
   if(!variables.Get("queue_max_size",  queue_max_size)) variables.Set("queue_max_size", queue_max_size);
+  if(!variables.Get("data_chunk_size_ms",  data_chunk_size_ms)) variables.Set("data_chunk_size_ms", data_chunk_size_ms);
 
 
   //////////////////////////////////  
@@ -139,15 +143,18 @@ int main(int argc, char *argv[]){
   //////////////////
 
   int state=1;
+  variables.Set("state",state);
 
 
   while(state){
 
-    //    sleep(3);
+    //sleep(3);
 
-    if(state==2){
+    variables.Get("state",state);
+
+    if(state==3){
       data_manager.GetData(); 
-      zmq::poll(&in_items[0], 2, 0);  
+      zmq::poll(&in_items[0], 2, 0); 
     }
     else{
       zmq::poll(&in_items[0], 2, 100); 
@@ -157,28 +164,37 @@ int main(int argc, char *argv[]){
     data_manager.ManageQueues();
     zmq::poll(&out_items[0], 4, 0);
    
-    if(in_items[0].revents & ZMQ_POLLIN)  slow_control.Receive(state);
-    
+    if(in_items[0].revents & ZMQ_POLLIN){
+
+      ///      std::cout<<"receiving slow control"<<std::endl;
+      slow_control.Receive(); 
+      // std::cout<<"slow control received"<<std::endl;
+    }
     
     boost::posix_time::time_duration lapse = config_request_period_td - (boost::posix_time::second_clock::universal_time() - last_config_request);
     
     if(lapse.is_negative() && state==1){
-      
+      //std::cout<<"slow control request"<<std::endl;
       slow_control.Request();    
       last_config_request=boost::posix_time::second_clock::universal_time();
+      // std::cout<<"end slow control request"<<std::endl;
     }
     
     
-    if((out_items[0].revents & ZMQ_POLLOUT) && state!=0) slow_control.Send();
-
-
+    if((out_items[0].revents & ZMQ_POLLOUT) && state!=0){
+      //std::cout<<"slow control send"<<std::endl;
+      slow_control.Send();
+      //std::cout<<"end slow control send"<<std::endl;
+    }
     
     lapse=broadcast_period_td - (boost::posix_time::second_clock::universal_time() - last_service_broadcast);
     
     if((out_items[1].revents & ZMQ_POLLOUT) && lapse.is_negative() && state!=0){
-
-      service_discovery.Send(monitor.Status());
+      
+      //std::cout<<"sd send"<<std::endl;
+      service_discovery.Send();
       last_service_broadcast=boost::posix_time::second_clock::universal_time();
+      //std::cout<<"end sd send"<<std::endl;
     }
 
 
@@ -186,18 +202,26 @@ int main(int argc, char *argv[]){
 
 
     if((out_items[2].revents & ZMQ_POLLOUT) && lapse.is_negative() && state!=0){
-
-      monitor.Send(state);
+      data_manager.UpdateStatus();
+      monitor.Send();
       last_monitor_send=boost::posix_time::second_clock::universal_time();
+      //std::cout<<"end monitor send"<<std::endl;
     }
   
 
-    if((in_items[1].revents & ZMQ_POLLIN) && state!=0) data_manager.Receive();
+    if((in_items[1].revents & ZMQ_POLLIN) && state!=0){
+      //std::cout<<"dr"<<std::endl;
+      data_manager.Receive();
+      //std::cout<<"dr end"<<std::endl;
+      
+    }
+    if((out_items[3].revents & ZMQ_POLLOUT) && state!=0){
 
-    if((out_items[3].revents & ZMQ_POLLOUT) && state!=0) data_manager.Send();
-
+      //std::cout<<"ds"<<std::endl;
+      data_manager.Send();
+      //std::cout<<"ds end"<<std::endl;
 }
-  
+  }  
  
   return 0;
   

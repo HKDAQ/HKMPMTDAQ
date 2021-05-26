@@ -18,8 +18,8 @@ class ServiceDiscovery{
 
 public:
 
-  ServiceDiscovery(Store &variables, int &return_sock);
-  void Send(std::string status);
+  ServiceDiscovery(Store &invariables, int &return_sock);
+  void Send();
   
  private:
 
@@ -30,6 +30,7 @@ public:
 
   long msg_id;
   Store message;
+  Store* variables;
   
 };
 

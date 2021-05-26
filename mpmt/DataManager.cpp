@@ -1,59 +1,70 @@
 #include <DataManager.h>
 
-DataManager::DataManager(zmq::socket_t &insock, Logger &inlogger, Store &variables){
+DataManager::DataManager(zmq::socket_t &insock, Logger &inlogger, Store &invariables){
 
   sock=&insock;
   logger=&inlogger;
+  variables=&invariables;
 
   std::string data_sock_port;
   int data_timeout;
   int resend_time;
 
-  variables.Get("data_sock_port",data_sock_port);
-  variables.Get("data_timeout",data_timeout);
+  variables->Get("data_sock_port",data_sock_port);
+  variables->Get("data_timeout",data_timeout);
 
-  variables.Get("UUID", UUID);
+  variables->Get("UUID", UUID);
 
-  variables.Get("data_timeout", data_timeout);
-  variables.Get("resend_period", resend_time);
-  resend_period=boost::posix_time::microseconds(resend_time);
-  variables.Get("resend_attempts", resend_attempts);
-  variables.Get("queue_warning_limit", queue_warning_limit);
-  variables.Get("queue_max_size", queue_max_size);
-  variables.Get("data_chunk_size_ms", data_chunk_size_ms);
+  variables->Get("data_timeout", data_timeout);
+  variables->Get("resend_period", resend_time);
+  resend_period=boost::posix_time::milliseconds(resend_time);
+  variables->Get("resend_attempts", resend_attempts);
+  variables->Get("queue_warning_limit", queue_warning_limit);
+  variables->Get("queue_max_size", queue_max_size);
+  variables->Get("data_chunk_size_ms", data_chunk_size_ms);
 
   sock->bind(data_sock_port.c_str());
   sock->setsockopt(ZMQ_RCVTIMEO, data_timeout);
   sock->setsockopt(ZMQ_SNDTIMEO, data_timeout);
 
 
-  variables.Get("fake_data_rate", fake_data_rate);
+  if(!variables->Get("fake_data_rate", fake_data_rate)) fake_data_rate=5700;
+  last_get=boost::posix_time::microsec_clock::universal_time();
+
+  data_id=0;
+
 }
 
 
 bool DataManager::GetData(){
 
   boost::posix_time::time_duration lapse=boost::posix_time::microsec_clock::universal_time()-last_get;
-  long ms= lapse.total_microseconds();
+  long ms= lapse.total_milliseconds();
 
   if(ms>=data_chunk_size_ms){
+    
+    int numhits=(fake_data_rate*ms)/1000;
+    
+    if(numhits>0){
 
-    MPMTDataChunk* data=new MPMTDataChunk(UUID);
-
-    int numhits=(fake_data_rate/1000)*ms;
-    data->hits.resize(numhits);
-
-    for(int i=0; i<numhits; i++){
+      MPMTDataChunk* data=new MPMTDataChunk(UUID);
+      data->hits.resize(numhits);
       
-      data->hits.at(i).adc_charge= 1000+i; 
-      data->hits.at(i).pmt_id= i%19;
-      data->hits.at(i).time_corse= i;
-      data->hits.at(i).time_fine= i*100;
+      for(int i=0; i<numhits; i++){
+      
+	data->hits.at(i).adc_charge= 1000+i; 
+	data->hits.at(i).pmt_id= (i*100) % 19;
+	data->hits.at(i).time_corse= i;
+	data->hits.at(i).time_fine= i*100;
+	
+      }
+      
+      data_queue.push_back(data);
+      
+      last_get=boost::posix_time::microsec_clock::universal_time();
 
     }
-
-    data_queue.push_back(data);
-
+    
   }
 
   return true;
@@ -67,14 +78,14 @@ bool DataManager::ManageQueues(){
     logger->Send("Warnning!!! MPMT buffer full oldest data is being deleted");
 
     if(data_queue.size()){
-
+      
       if(!data_queue.at(0)->in_use) delete data_queue.at(0);
       else data_queue.at(0)->in_use=false;
       data_queue.at(0)=0;
       data_queue.pop_front();
-
+      
     }
-
+    
   }
   else if((data_queue.size()+sent_queue.size())> queue_warning_limit) logger->Send("Warnning!!! MPMT buffer nearly full");
 
@@ -131,7 +142,7 @@ bool DataManager::Receive(){
   if(akn.Receive(sock)){
     
     unsigned long received_id=0;
-    if(akn.Get("data_id",received_id))
+    if(akn.Get("data_id",received_id)){
       
       for(std::deque<MPMTDataChunk*>::iterator it=sent_queue.begin(); it!=sent_queue.end(); it++){
 	
@@ -145,22 +156,25 @@ bool DataManager::Receive(){
 	}
 	
       }
-    
-    if(!found){
-      for(std::deque<MPMTDataChunk*>::iterator it=data_queue.begin(); it!=data_queue.end(); it++){
-	
-	if((*it)->data_id == received_id){ 
-	  if(!(*it)->in_use) delete (*it);
-	  else (*it)->in_use=false;
-	  (*it)=0;
-	  data_queue.erase(it);
-	  break;
+      
+      if(!found){
+	for(std::deque<MPMTDataChunk*>::iterator it=data_queue.begin(); it!=data_queue.end(); it++){
+	  
+	  if((*it)->data_id == received_id){ 
+	    if(!(*it)->in_use) delete (*it);
+	    else (*it)->in_use=false;
+	    (*it)=0;
+	    data_queue.erase(it);
+	    break;
+	  }
+	  
 	}
-	
       }
       
       return true; 
-   
+      
+      
+      
     }
     
     logger->Send("Warning!!! MPMT data_id missing from data AKN");
@@ -174,3 +188,10 @@ bool DataManager::Receive(){
 
 
 
+void DataManager::UpdateStatus(){
+
+  variables->Set("data_queue", data_queue.size());
+  variables->Set("sent_queue", sent_queue.size());
+  variables->Set("max_queue", queue_max_size);     
+
+}

@@ -12,15 +12,17 @@ class DataManager{
 
  public:
 
-  DataManager(zmq::socket_t &insock, Logger &inlogger, Store &variables);
+  DataManager(zmq::socket_t &insock, Logger &inlogger, Store &invariables);
   bool GetData();
   bool ManageQueues();
   bool Receive();
   bool Send();
+  void UpdateStatus();
 
  private:
 
   zmq::socket_t* sock;
+  Store *variables;
   std::string UUID;
   std::deque<MPMTDataChunk*> data_queue;
   std::deque<MPMTDataChunk*> sent_queue;
@@ -31,7 +33,7 @@ class DataManager{
   int resend_attempts;
   int queue_warning_limit;
   int queue_max_size;
-  int data_chunk_size_ms;
+  long data_chunk_size_ms;
   boost::posix_time::ptime last_get;
 
   int fake_data_rate;

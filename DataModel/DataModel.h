@@ -14,6 +14,8 @@
 
 #include <zmq.hpp>
 
+#include <MPMTDataChunk.h>
+
 /**
 * \class DataModel
  *

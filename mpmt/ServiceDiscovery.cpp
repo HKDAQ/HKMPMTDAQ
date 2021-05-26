@@ -1,8 +1,9 @@
 #include <ServiceDiscovery.h>
 
 
-ServiceDiscovery::ServiceDiscovery(Store &variables, int &return_sock){
+ServiceDiscovery::ServiceDiscovery(Store &invariables, int &return_sock){
 
+  variables=&invariables;
 
   std::string address;
   int port;
@@ -10,11 +11,11 @@ ServiceDiscovery::ServiceDiscovery(Store &variables, int &return_sock){
   std::string service_name;
   int remote_port;
 
-  variables.Get("service_discovery_address", address);
-  variables.Get("service_discovery_port", port);
-  variables.Get("UUID", UUID);
-  variables.Get("service_name", service_name);
-  variables.Get("slow_control_port", remote_port);
+  variables->Get("service_discovery_address", address);
+  variables->Get("service_discovery_port", port);
+  variables->Get("UUID", UUID);
+  variables->Get("service_name", service_name);
+  variables->Get("slow_control_port", remote_port);
 
   
   // set up socket //                                       
@@ -46,7 +47,7 @@ ServiceDiscovery::ServiceDiscovery(Store &variables, int &return_sock){
 
   message.Set("uuid",UUID);   
   message.Set("remote_port",remote_port);
-  message.Set("status_query",false);
+  message.Set("status_query",true);
   message.Set("msg_type","Service Discovery");  
   message.Set("msg_value",service_name);
 
@@ -55,13 +56,16 @@ ServiceDiscovery::ServiceDiscovery(Store &variables, int &return_sock){
   return_sock=sock;
 }
 
-void ServiceDiscovery::Send(std::string status){
+void ServiceDiscovery::Send(){
   
   msg_id++;
 
+  std::string status;
+  variables->Get("status",status);
+
   message.Set("status",status);
   message.Set("msg_id",msg_id);   
-
+  
   boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time();
   
   std::stringstream isot;
@@ -74,7 +78,7 @@ void ServiceDiscovery::Send(std::string status){
   
   char msg[pubmessage.length()+1];
   
-  snprintf(msg, pubmessage.length()+1 , "%s" , pubmessage.c_str() ) ;
+  snprintf(msg, pubmessage.length()+1 , "%s" , pubmessage.c_str() );  //can remove
   
   cnt = sendto(sock, msg , sizeof(msg), 0,(struct sockaddr *) &addr, addrlen);
       

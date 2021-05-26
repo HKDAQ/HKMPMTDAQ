@@ -48,7 +48,7 @@ bool SlowControl::Execute(){
 	  
 	  std::cout<<orange<<"received slowcontrol message:"<<std::endl;
 	  
-	  std::cout<<iss.str()<<plain<<std::endl;
+	  std::cout<<iss.str()<<plain<<std::endl<<std::endl;
 
 	  Store tmp; 
 	  tmp.JsonParser(iss.str());

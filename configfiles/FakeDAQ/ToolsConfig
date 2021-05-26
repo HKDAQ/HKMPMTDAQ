@@ -3,3 +3,4 @@
 Logger Logger NULL
 SlowControl SlowControl NULL
 Monitor Monitor NULL
+DataReceiver DataReceiver NULL

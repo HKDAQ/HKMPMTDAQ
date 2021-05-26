@@ -10,7 +10,7 @@ class Hit{
   float time_corse;
   float time_fine;
 
-  int Size(){ return sizeof(adc_charge)+sizeof(pmt_id)+sizeof(time_corse)+sizeof(time_fine);}
+  static int Size(){ return sizeof(adc_charge)+sizeof(pmt_id)+sizeof(time_corse)+sizeof(time_fine);}
 
 };
 
