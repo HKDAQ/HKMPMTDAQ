@@ -7,8 +7,8 @@ SlowControl::SlowControl(zmq::socket_t &insock, Logger &inlogger, Store &invaria
   variables=&invariables;
   logger=&inlogger;
   
-  std::string slow_control_sock_port;
-  int slow_control_timeout;
+  std::string slow_control_sock_port="tcp://*:22222";  //endpoint and port to bind slow control socket to
+  int slow_control_timeout;   // number of milliseconds before giving up on a connection if other side goes down
   
   variables->Get("UUID", UUID);
   variables->Get("slow_control_sock_port", slow_control_sock_port);
@@ -131,6 +131,8 @@ bool SlowControl::Receive(){
 
 std::string SlowControl::Command (std::string command){
 
+  // can add any slow control commands you want to here
+
   std::string ret="Warning!!! unknown Command received: "+command;
 
   int state=0;
@@ -157,6 +159,8 @@ std::string SlowControl::Command (std::string command){
     if(state==1) ret="Avaiable commands are: Stop, Status, ?";
     else ret="Avaiable commands are: Start, Pause, Stop, Init, Status, ?";    
   }
+  //......  
+  //......
 
   variables->Set("state",state);
   
@@ -166,7 +170,10 @@ std::string SlowControl::Command (std::string command){
  
 bool SlowControl::Config (){
 
-  //  configuration_variables.Print();
+  //  here you can make use of any of the configuration variables loaded in when loading the configuration JSON file.
+
+  //.....
+  //.....
 
   return true;
 

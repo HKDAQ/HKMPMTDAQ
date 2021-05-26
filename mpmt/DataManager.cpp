@@ -6,9 +6,9 @@ DataManager::DataManager(zmq::socket_t &insock, Logger &inlogger, Store &invaria
   logger=&inlogger;
   variables=&invariables;
 
-  std::string data_sock_port;
-  int data_timeout;
-  int resend_time;
+  std::string data_sock_port="tcp://*:44444"; //endpoint and port to bind data socket tp
+  int data_timeout=100;  // number of milliseconds before giving up on a connection if other side goes down
+  int resend_time=10; // number of milliseconds before resend of data if no acknoledgement from DAQ has been received
 
   variables->Get("data_sock_port",data_sock_port);
   variables->Get("data_timeout",data_timeout);
@@ -19,16 +19,17 @@ DataManager::DataManager(zmq::socket_t &insock, Logger &inlogger, Store &invaria
   variables->Get("resend_period", resend_time);
   resend_period=boost::posix_time::milliseconds(resend_time);
   variables->Get("resend_attempts", resend_attempts);
-  variables->Get("queue_warning_limit", queue_warning_limit);
-  variables->Get("queue_max_size", queue_max_size);
-  variables->Get("data_chunk_size_ms", data_chunk_size_ms);
+  if(!variables->Get("queue_warning_limit", queue_warning_limit)) queue_warning_limit=8000; //number of data chunks in memory before warning that nearfull capacity
+  if(!variables->Get("queue_max_size", queue_max_size)) queue_max_size=10000;  //maximum capacity of data chunks, when reached oldest data will be deleted to make room for new data 
+  if(!variables->Get("data_chunk_size_ms", data_chunk_size_ms)) data_chunk_size_ms=100;  // umber of ms to collect hits into a single data chunk
 
   sock->bind(data_sock_port.c_str());
   sock->setsockopt(ZMQ_RCVTIMEO, data_timeout);
   sock->setsockopt(ZMQ_SNDTIMEO, data_timeout);
 
 
-  if(!variables->Get("fake_data_rate", fake_data_rate)) fake_data_rate=5700;
+  if(!variables->Get("fake_data_rate", fake_data_rate)) fake_data_rate=5700;  //rate in Hz of PMTs for creating fake MPMT data 5700= 19(PMTs) x 300(Hz)
+
   last_get=boost::posix_time::microsec_clock::universal_time();
 
   data_id=0;

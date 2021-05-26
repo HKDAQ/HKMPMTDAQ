@@ -5,11 +5,11 @@ ServiceDiscovery::ServiceDiscovery(Store &invariables, int &return_sock){
 
   variables=&invariables;
 
-  std::string address;
-  int port;
+  std::string address="239.192.1.1";  // service discovery multicast address (dont change needs to be consistent with DAQ)
+  int port=5000;  // service discovery multicast port number (dont change needs to be consistent with DAQ)
   std::string UUID;
-  std::string service_name;
-  int remote_port;
+  std::string service_name="MPMT"; //service discovery name so other nodes know what type of node you are
+  int remote_port=22222; //port number for remote control/slow control
 
   variables->Get("service_discovery_address", address);
   variables->Get("service_discovery_port", port);

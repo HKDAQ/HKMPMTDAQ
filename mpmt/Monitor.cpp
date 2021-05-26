@@ -5,7 +5,7 @@ Monitor::Monitor(zmq::socket_t &insock, Store &invariables){
   sock=&insock;
   variables=&invariables;
 
-  std::string monitor_sock_port;
+  std::string monitor_sock_port="tcp://*:33333";  //  endpoint and port to bind monitoring socket to
 
   variables->Get("monitor_sock_port",monitor_sock_port);
 
@@ -27,10 +27,14 @@ bool Monitor::Send(){
 
 void Monitor::CollectData(){
 
+  //collect all your monitoring data here and fill the monitoring data Store
+
   float temp1=28.5;
   float temp2=43.7;
   int voltage1=1300;
   int voltage2=1280;
+  //......
+  //......
   std::stringstream status;
   int state=0;
   int data_queue=0;

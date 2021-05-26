@@ -1,0 +1,36 @@
+# Dynamic variables file
+
+# variables are in key value pairs with any type accepted and '#' for comments
+
+UUID a19e7f54-7c3c-4525-a4de-6cf10d6d0322    # unique identifier
+
+#Logging
+logger_sock_port           tcp://*:11111     # endpoint and port number to bind logging socket to
+logger_resend_period       1                 # number of senconds to hold back identical log messages to stop flooding
+
+#Service Discovery
+service_discovery_port     5000              # service discovery multicast port number (dont change needs to be consistent with DAQ)
+service_discovery_address  239.192.1.1       # service discovery multicast address (dont change needs to be consistent with DAQ)
+service_name               MPMT              # service discovery name so other nodes know what type of node you are
+broadcast_period           5                 # seconds between service discovery broadcasts
+
+#SlowControl
+slow_control_port          22222             # port number for slow control
+slow_control_sock_port     tcp://*:22222     # endpoint and port to bind slow control socket to (consisten with above)
+slow_control_timeout       100               # number of milliseconds before giving up on a connection if other side goes down
+config_request_period      1                 # number of seconds between requests for initial configuration setting when first booted
+
+#Monitoring
+monitor_sock_port          tcp://*:33333     # endpoint and port to bind monitoring socket to 
+monitor_send_period        10                # number of seconds between monitoring information is given out
+
+#Data
+data_sock_port             tcp://*:44444     # endpoint and port to bind data socket tp
+data_timeout               100               # number of milliseconds before giving up on a connection if other side goes down
+resend_period              10                # number of milliseconds before resend of data if no acknoledgement from DAQ has been received
+resend_attempts            10                # number of times to try and send data to DAQ before deleting it and giving up
+queue_warning_limit        300               # number of data chunks in memory before warning that near full capacity
+queue_max_size             500               # maximum capacity of data chunks, when reached oldest data will be deleted to make room for new data
+data_chunk_size_ms         100               # number of ms to collect hits into a single data chunk 
+
+fake_data_rate             5700              # rate in Hz of PMTs for creating fake MPMT data 5700= 19(PMTs) x 300(Hz)

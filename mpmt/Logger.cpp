@@ -4,10 +4,10 @@ Logger::Logger(zmq::socket_t &insock, Store &variables){
 
   sock=&insock;
 
-  std::string logger_sock_port;
-  int logger_resend_period=0;
-  std::string service_name;
-  std::string UUID;
+  std::string logger_sock_port="tcp://*:11111"; // endpoint and port number to bind logging socket to
+  int logger_resend_period=1;  // number of senconds to hold back identical log messages to stop flooding
+  std::string service_name="MPMT"; // service name so other nodes know what type of node this is
+  std::string UUID="";  // unique identifier
 
   variables.Get("logger_resend_period",logger_resend_period);
   variables.Get("service_name",service_name);
