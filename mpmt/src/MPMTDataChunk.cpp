@@ -51,7 +51,7 @@ bool MPMTDataChunk::Receive(zmq::socket_t* sock){
       if(size){
 	if(msg.more() && sock->recv(&msg)){
 
-	  hits.resize(msg.size()/sizeof(Hit::Size()));
+	  hits.resize(size);
 	  std::memcpy(&hits[0], msg.data(), msg.size());
 	
 	}

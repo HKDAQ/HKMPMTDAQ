@@ -13,6 +13,8 @@ bool Logger::Initialise(std::string configfile, DataModel &data){
 
   if(!m_variables.Get("verbose",m_verbose)) m_verbose=1;
 
+  if(!m_variables.Get("logger_port",logger_port)) logger_port="11111";
+
   logger_sock=new zmq::socket_t(*(m_data->context), ZMQ_SUB);
   logger_sock->setsockopt(ZMQ_SUBSCRIBE,"",0);
 
@@ -24,7 +26,7 @@ bool Logger::Initialise(std::string configfile, DataModel &data){
 
 bool Logger::Execute(){
 
-  utils->UpdateConnections("MPMT", logger_sock, connections, "11111");
+  utils->UpdateConnections("MPMT", logger_sock, connections, logger_port);
 
   zmq::message_t msg;
 
@@ -41,11 +43,11 @@ bool Logger::Execute(){
     message=*tmp["msg"];
 
    
-    std::cout<<blue<<"received log message:"<<std::endl;
-    std::cout<<"From: "<<from<<","<<uuid<<std::endl;
-    std::cout<<"Time: "<<time<<std::endl;                 
-    std::cout<<"Msg: "<<message<<plain<<std::endl<<std::endl;              
- 
+    *m_log<<blue<<"received log message:"<<std::endl;
+    *m_log<<blue<<"From: "<<from<<","<<uuid<<std::endl;
+    *m_log<<blue<<"Time: "<<time<<std::endl;                 
+    *m_log<<blue<<"Msg: "<<message<<plain<<std::endl<<std::endl;              
+    
 
   }
 
@@ -54,6 +56,14 @@ bool Logger::Execute(){
 
 
 bool Logger::Finalise(){
+
+  delete logger_sock;
+  logger_sock=0;
+
+  delete utils;
+  utils=0;
+
+  connections.clear();
 
   return true;
 }

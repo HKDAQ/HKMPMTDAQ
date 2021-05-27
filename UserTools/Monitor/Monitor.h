@@ -32,7 +32,7 @@ class Monitor: public Tool {
   zmq::socket_t* monitor_sock;
   Utilities* utils;
   std::map<std::string,Store*> connections;
-
+  std::string monitor_port;
 
 
 };

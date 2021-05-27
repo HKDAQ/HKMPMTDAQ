@@ -26,7 +26,6 @@ int main(int argc, char *argv[]){
   ///////////// Variables and Defaults //////////////////////
 
   Store variables; // simple dynamic omni storage class
-  if(argc==2) variables.Initialise(argv[1]); // loading dynamic variables file
 
   std::string UUID=boost::uuids::to_string(boost::uuids::random_generator()());  // unique identifier
   
@@ -34,12 +33,21 @@ int main(int argc, char *argv[]){
   int config_request_period=1;  // number of seconds between requests for initial configurat
   int monitor_send_period=10;   // number of seconds between monitoring information is given out
   int service_discovery_sock=0;  // endpoint for service discovery socket
-
-  variables.Get("UUID",UUID);    // loading variables dynamically from variables file
-  variables.Get("broadcast_period",broadcast_period); 
-  variables.Get("config_request_period",config_request_period);
-  variables.Get("monitor_send_period",monitor_send_period);
   
+  variables.Set("UUID",UUID);
+  variables.Set("broadcast_period",broadcast_period);
+  variables.Set("config_request_period",config_request_period);
+  variables.Set("monitor_send_period",monitor_send_period);
+  
+  if(argc==2){
+    variables.Initialise(argv[1]); // loading dynamic variables file
+    
+    variables.Get("UUID",UUID);    // loading variables dynamically from variables file
+    variables.Get("broadcast_period",broadcast_period); 
+    variables.Get("config_request_period",config_request_period);
+    variables.Get("monitor_send_period",monitor_send_period);
+  
+  }
   //////////////////////////////////////////////////////
 
 

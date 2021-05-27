@@ -72,6 +72,7 @@ bool SlowControl::Receive(){
 
 	  if(type=="Config"){
 	    ret.Set("AKN",Config());
+	    logger->Send("MPMT Reconfigured/Initiaised"); 
 	    ret.Set("msg_value", "Received Config");
 	    int state=0;
 	    variables->Get("state",state);
@@ -141,14 +142,17 @@ std::string SlowControl::Command (std::string command){
   if(command=="Start"){
     if(state==2) state=3;
     ret="Started";
+    logger->Send("MPMT Starting data taking"); 
   }
   else if(command=="Pause"){
     if(state==3) state=2;
     ret="Paused"; 
+    logger->Send("MPMT Paused"); 
   }
   else if(command=="Stop"){
     state=0;
     ret="Stopping";
+    logger->Send("MPMT Shutting down"); 
   }
   else if(command=="Init"){
     state=1;
@@ -216,6 +220,7 @@ bool SlowControl::Request(){
   msg_queue.push_back(reply1);
   msg_queue.push_back(reply2);
 
+  logger->Send("MPMT Initialising");
 
   return true;
 

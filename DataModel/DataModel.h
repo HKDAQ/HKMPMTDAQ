@@ -47,6 +47,8 @@ class DataModel {
 
   zmq::context_t* context; ///< ZMQ contex used for producing zmq sockets for inter thread,  process, or computer communication
 
+  
+  std::vector<Hit> hits;
 
  private:
 

@@ -41,7 +41,7 @@ void Logger::Send(std::string message){
   
   JSONmsg.Set("msg",message);
   
-  JSONmsg.Set("Time",boost::posix_time::to_simple_string(boost::posix_time::second_clock::universal_time()));
+  JSONmsg.Set("Time",boost::posix_time::to_iso_extended_string(boost::posix_time::second_clock::universal_time()));
   
   JSONmsg.Send(sock);
   

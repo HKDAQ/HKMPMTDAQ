@@ -8,4 +8,4 @@ BoostInclude= -I $(ToolDAQPath)/boost_1_66_0/install/include
 
 
 all:
-	g++ main.cpp logger.cpp Store.cpp ServiceDiscovery.cpp SlowControl.cpp Monitor.cpp DataManager.cpp MPMTDataChunk.cpp -I ./ $(ZMQInclude) $(ZMQLib) $(BoostInclude) $(BoostLib) 
+	g++ src/*.cpp -I ./include $(ZMQInclude) $(ZMQLib) $(BoostInclude) $(BoostLib) 

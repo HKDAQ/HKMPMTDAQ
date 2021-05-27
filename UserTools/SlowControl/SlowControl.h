@@ -33,7 +33,7 @@ class SlowControl: public Tool {
   Utilities* utils;    
   std::map<std::string,Store*> connections;
   zmq::pollitem_t items[1];
-
+  std::string slow_control_port;
 
 };
 

@@ -12,6 +12,7 @@ bool SlowControl::Initialise(std::string configfile, DataModel &data){
   m_log= m_data->Log;
 
   if(!m_variables.Get("verbose",m_verbose)) m_verbose=1;
+  if(!m_variables.Get("slow_control_port", slow_control_port)) slow_control_port="22222";
 
   slow_control_sock=new zmq::socket_t(*(m_data->context), ZMQ_ROUTER);
   slow_control_sock->setsockopt(ZMQ_IDENTITY,"MPMTSC1",8);
@@ -29,7 +30,7 @@ bool SlowControl::Initialise(std::string configfile, DataModel &data){
 
 bool SlowControl::Execute(){
 
-  utils->UpdateConnections("MPMT", slow_control_sock, connections, "22222");
+  utils->UpdateConnections("MPMT", slow_control_sock, connections, slow_control_port);
 
   zmq::poll(&items[0], 1, 0);
  
@@ -46,9 +47,9 @@ bool SlowControl::Execute(){
       
 	  std::istringstream iss(static_cast<char*>(msg.data()));
 	  
-	  std::cout<<orange<<"received slowcontrol message:"<<std::endl;
+	  *m_log<<orange<<"received slowcontrol message:"<<std::endl;
 	  
-	  std::cout<<iss.str()<<plain<<std::endl<<std::endl;
+	  *m_log<<orange<<iss.str()<<plain<<std::endl<<std::endl;
 
 	  Store tmp; 
 	  tmp.JsonParser(iss.str());
@@ -68,7 +69,10 @@ bool SlowControl::Execute(){
 	    
 	    std::string msg_str="";
 	    reply>>msg_str;
-	    
+	  
+	    *m_log<<yellow<<"Replied with:"<<std::endl;
+	    *m_log<<yellow<<msg_str<<plain<<std::endl<<std::endl;
+  
 	    zmq::message_t conifg_msg(msg_str.length()+1);
 	    
 	    snprintf ((char *) conifg_msg.data(), msg_str.length()+1 , "%s" , msg_str.c_str());
@@ -86,6 +90,14 @@ bool SlowControl::Execute(){
 
 
 bool SlowControl::Finalise(){
+
+  delete slow_control_sock;
+  slow_control_sock=0;
+
+  delete utils;
+  utils=0;
+
+  connections.clear();
 
   return true;
 }
