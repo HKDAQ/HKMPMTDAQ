@@ -106,7 +106,7 @@ int main(int argc, char *argv[]){
   variables.Set("status","Booting");       // loading current system status into variables Store so all classes can access it 
 
   while(state){       // main execution loop while state is anything other than shutdown
-
+   
     if(state==3){               // if in data taking state
       data_manager.GetData();        // Get data from hardware (I would normally thread this so it can run asynchronously, but trying limit numbers of threads and the rest of the code is pretty light weight so up to you. Currently i have just gnerated some fake data in it).
       zmq::poll(&in_items[0], 2, 0);       // there is no blocking on the polling here to not limit/holdup the collection of data 

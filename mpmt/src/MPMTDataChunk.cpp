@@ -11,8 +11,7 @@ MPMTDataChunk::MPMTDataChunk(std::string inUUID){
 }
 
 bool MPMTDataChunk::Send(zmq::socket_t* sock){
-  
-  data_id++;
+
   attempts++;
   
   zmq::message_t msg1(&data_id,sizeof(data_id), NULL);
@@ -42,7 +41,7 @@ bool MPMTDataChunk::Receive(zmq::socket_t* sock){
   
   if(sock->recv(&msg)){
 
-    data_id=*(reinterpret_cast<unsigned long*>(msg.data()));
+    data_id=*(reinterpret_cast<int*>(msg.data()));
 
     if(msg.more() && sock->recv(&msg)){
 

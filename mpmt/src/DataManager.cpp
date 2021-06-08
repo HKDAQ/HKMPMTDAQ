@@ -38,21 +38,22 @@ DataManager::DataManager(zmq::socket_t &insock, Logger &inlogger, Store &invaria
 
 
 bool DataManager::GetData(){
-
+  
   boost::posix_time::time_duration lapse=boost::posix_time::microsec_clock::universal_time()-last_get;
   long ms= lapse.total_milliseconds();
-
+  
   if(ms>=data_chunk_size_ms){
     
     int numhits=(fake_data_rate*ms)/1000;
-    
+        
     if(numhits>0){
-
+      
+      
       MPMTDataChunk* data=new MPMTDataChunk(UUID);
       data->hits.resize(numhits);
       
       for(int i=0; i<numhits; i++){
-      
+	
 	data->hits.at(i).adc_charge= 1000+i; 
 	data->hits.at(i).pmt_id= (i*100) % 19;
 	data->hits.at(i).time_corse= i;
@@ -63,13 +64,14 @@ bool DataManager::GetData(){
       data_queue.push_back(data);
       
       last_get=boost::posix_time::microsec_clock::universal_time();
-
+      
+            
     }
     
   }
-
+  
   return true;
-
+  
 }
 
 bool DataManager::ManageQueues(){
@@ -94,7 +96,7 @@ bool DataManager::ManageQueues(){
   for(std::deque<MPMTDataChunk*>::iterator it=sent_queue.begin(); it!=sent_queue.end(); it++){
 
     boost::posix_time::time_duration lapse=resend_period-(boost::posix_time::microsec_clock::universal_time() - (*it)->last_send);
-    
+  
     if(lapse.is_negative()){
       if((*it)->attempts< resend_attempts){
 	(*it)->attempts++;
@@ -136,7 +138,7 @@ bool DataManager::Send(){
 
 bool DataManager::Receive(){
 
-  bool found=true;
+  bool found=false;
   
   Store akn;
 
@@ -146,7 +148,7 @@ bool DataManager::Receive(){
     if(akn.Get("data_id",received_id)){
       
       for(std::deque<MPMTDataChunk*>::iterator it=sent_queue.begin(); it!=sent_queue.end(); it++){
-	
+
 	if((*it)->data_id == received_id){
 	  if(!(*it)->in_use) delete (*it);
 	  else (*it)->in_use=false;
@@ -171,7 +173,7 @@ bool DataManager::Receive(){
 	  
 	}
       }
-      
+     
       return true; 
       
       

@@ -18,7 +18,7 @@ class MPMTDataChunk{
     
   std::vector<Hit> hits;
   std::string UUID;
-  unsigned long data_id;
+  int data_id;
 
   boost::posix_time::ptime last_send;
   int attempts;

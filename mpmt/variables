@@ -2,7 +2,7 @@
 
 # variables are in key value pairs with any type accepted and '#' for comments
 
-UUID a19e7f54-7c3c-4525-a4de-6cf10d6d0322    # unique identifier
+#UUID a19e7f54-7c3c-4525-a4de-6cf10d6d0322    # unique identifier
 
 #Logging
 logger_sock_port           tcp://*:11111     # endpoint and port number to bind logging socket to
