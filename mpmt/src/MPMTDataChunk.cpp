@@ -27,7 +27,7 @@ bool MPMTDataChunk::Send(zmq::socket_t* sock){
     
   }
 
-  zmq::message_t msg4(&(UUID[0]),sizeof(char)*UUID.length()+1, NULL);   
+  zmq::message_t msg4(&(UUID[0]),sizeof(char)*UUID.length()+1, MPMTDataChunk::Cleanup, this);   
   sock->send(msg4);          
   
   return true;
@@ -41,7 +41,7 @@ bool MPMTDataChunk::Receive(zmq::socket_t* sock){
   
   if(sock->recv(&msg)){
 
-    data_id=*(reinterpret_cast<int*>(msg.data()));
+    data_id=*(reinterpret_cast<unsigned int*>(msg.data()));
 
     if(msg.more() && sock->recv(&msg)){
 
@@ -73,3 +73,12 @@ bool MPMTDataChunk::Receive(zmq::socket_t* sock){
 
   return true;
 }      
+
+void MPMTDataChunk::Cleanup(void *data, void *hint){
+
+  if (hint!=0){
+    MPMTDataChunk* tmp=reinterpret_cast<MPMTDataChunk*>(hint);
+    delete tmp;
+  }
+
+}

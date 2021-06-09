@@ -23,10 +23,12 @@ bool DataReceiver::Initialise(std::string configfile, DataModel &data){
   items[0].events=ZMQ_POLLIN;
   items[0].revents=0;
 
-  period=boost::posix_time::seconds(1);
+  period=boost::posix_time::seconds(10);
 
-  sum=0;
-  last=boost::posix_time::second_clock::universal_time();
+  hitsum=0;
+  msgsum=0;
+
+  last=boost::posix_time::microsec_clock::universal_time();
 
   return true;
 }
@@ -34,24 +36,22 @@ bool DataReceiver::Initialise(std::string configfile, DataModel &data){
 
 bool DataReceiver::Execute(){
 
-  utils->UpdateConnections("MPMT", data_sock, connections, data_port);
-
-
-  zmq::poll(&items[0], 1, 100);
-
+  zmq::poll(&items[0], 1, 0);
+  
   if(items[0].revents & ZMQ_POLLIN){
     
     
     zmq::message_t identity;
     data_sock->recv(&identity); 
-
+    
     MPMTDataChunk tmp;
-  
-
+    
+    
     if(tmp.Receive(data_sock)){
-
-
-      sum+=tmp.hits.size();
+      
+      
+      msgsum++;
+      hitsum+=tmp.hits.size();
       
       Store reply;
       reply.Set("data_id", tmp.data_id);
@@ -72,19 +72,22 @@ bool DataReceiver::Execute(){
 
   }
 
-  boost::posix_time::time_duration lapse = period -( boost::posix_time::second_clock::universal_time() - last);
-
-
-  if(lapse.is_negative() && sum>0){
-
-    *m_log<<"Received: "<<sum<<" hits in the last "<<period<<std::endl;
-
-    last= boost::posix_time::second_clock::universal_time();
-    sum=0;
+  boost::posix_time::time_duration lapse = period -( boost::posix_time::microsec_clock::universal_time() - last);
+  
+  if(lapse.is_negative()){
+    
+    utils->UpdateConnections("MPMT", data_sock, connections, data_port);
+    if(sum>0){
+      
+      *m_log<<"Received: "<<hitsum<<" hits from "<<msgsum<<" messages, in the last "<<period<<std::endl;
+      
+      last= boost::posix_time::microsec_clock::universal_time();
+      hitsum=0;
+      msgsum=0;
+    }
+    
   }
-
-
-	
+  
   return true;
 }
 

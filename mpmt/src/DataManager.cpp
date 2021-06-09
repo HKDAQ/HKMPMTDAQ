@@ -60,7 +60,9 @@ bool DataManager::GetData(){
 	data->hits.at(i).time_fine= i*100;
 	
       }
-      
+
+      data_id++;
+      data->data_id=data_id;
       data_queue.push_back(data);
       
       last_get=boost::posix_time::microsec_clock::universal_time();
@@ -122,8 +124,6 @@ bool DataManager::Send(){
 
   if(data_queue.size()){
     data_queue.at(0)->in_use=true;
-    data_id++;
-    data_queue.at(0)->data_id=data_id;
     data_queue.at(0)->last_send=boost::posix_time::microsec_clock::universal_time();
     ret*=data_queue.at(0)->Send(sock);
     sent_queue.push_back(data_queue.at(0));
@@ -144,7 +144,7 @@ bool DataManager::Receive(){
 
   if(akn.Receive(sock)){
     
-    unsigned long received_id=0;
+    int received_id=0;
     if(akn.Get("data_id",received_id)){
       
       for(std::deque<MPMTDataChunk*>::iterator it=sent_queue.begin(); it!=sent_queue.end(); it++){

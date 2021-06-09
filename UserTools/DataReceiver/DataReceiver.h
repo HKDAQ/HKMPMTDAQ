@@ -33,7 +33,8 @@ class DataReceiver: public Tool {
   Utilities* utils;
   std::map<std::string,Store*> connections;
   zmq::pollitem_t items[1];
-  unsigned long sum;
+  unsigned long hitsum;
+  unsigned long msgsum;
   boost::posix_time::time_duration period;
   boost::posix_time::ptime last;
   std::string data_port;

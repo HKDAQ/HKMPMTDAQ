@@ -18,11 +18,13 @@ class MPMTDataChunk{
     
   std::vector<Hit> hits;
   std::string UUID;
-  unsigned long data_id;
+  unsigned int data_id;
 
   boost::posix_time::ptime last_send;
   int attempts;
   bool in_use;
+
+  static void Cleanup(void *data, void *hint);
 
  private:
 

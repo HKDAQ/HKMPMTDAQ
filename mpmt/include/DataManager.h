@@ -27,7 +27,7 @@ class DataManager{
   std::deque<MPMTDataChunk*> data_queue;
   std::deque<MPMTDataChunk*> sent_queue;
   Logger* logger;
-  unsigned long data_id;
+  unsigned int data_id;
   int data_timeout;
   boost::posix_time::time_duration resend_period;
   int resend_attempts;
