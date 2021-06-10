@@ -77,7 +77,7 @@ bool DataReceiver::Execute(){
   if(lapse.is_negative()){
     
     utils->UpdateConnections("MPMT", data_sock, connections, data_port);
-    if(sum>0){
+    if(hitsum>0){
       
       *m_log<<"Received: "<<hitsum<<" hits from "<<msgsum<<" messages, in the last "<<period<<std::endl;
       
