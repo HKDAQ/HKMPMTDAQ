@@ -22,9 +22,6 @@ class MPMTDataChunk{
 
   boost::posix_time::ptime last_send;
   int attempts;
-  bool in_use;
-
-  static void Cleanup(void *data, void *hint);
 
  private:
 

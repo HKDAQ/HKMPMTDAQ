@@ -84,8 +84,7 @@ bool DataManager::ManageQueues(){
 
     if(data_queue.size()){
       
-      if(!data_queue.at(0)->in_use) delete data_queue.at(0);
-      else data_queue.at(0)->in_use=false;
+      delete data_queue.at(0);
       data_queue.at(0)=0;
       data_queue.pop_front();
       
@@ -104,14 +103,14 @@ bool DataManager::ManageQueues(){
 	(*it)->attempts++;
 	data_queue.push_front((*it));
       }
-      else{
-	if(!(*it)->in_use) delete (*it);
-	else (*it)->in_use=false;
-      }
-	(*it)=0;
-	sent_queue.erase(it);
-	break;
-      }
+      else delete (*it);
+      
+      (*it)=0;
+      sent_queue.erase(it);
+      break;
+      
+    }
+    
   }
 
   return true;
@@ -123,7 +122,6 @@ bool DataManager::Send(){
   bool ret=true;
 
   if(data_queue.size()){
-    data_queue.at(0)->in_use=true;
     data_queue.at(0)->last_send=boost::posix_time::microsec_clock::universal_time();
     ret*=data_queue.at(0)->Send(sock);
     sent_queue.push_back(data_queue.at(0));
@@ -150,8 +148,7 @@ bool DataManager::Receive(){
       for(std::deque<MPMTDataChunk*>::iterator it=sent_queue.begin(); it!=sent_queue.end(); it++){
 
 	if((*it)->data_id == received_id){
-	  if(!(*it)->in_use) delete (*it);
-	  else (*it)->in_use=false;
+	  delete (*it);
 	  (*it)=0;
 	  sent_queue.erase(it);
 	  found=true;
@@ -164,8 +161,7 @@ bool DataManager::Receive(){
 	for(std::deque<MPMTDataChunk*>::iterator it=data_queue.begin(); it!=data_queue.end(); it++){
 	  
 	  if((*it)->data_id == received_id){ 
-	    if(!(*it)->in_use) delete (*it);
-	    else (*it)->in_use=false;
+	    delete (*it);
 	    (*it)=0;
 	    data_queue.erase(it);
 	    break;

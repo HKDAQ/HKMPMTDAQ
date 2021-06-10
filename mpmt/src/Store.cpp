@@ -95,11 +95,11 @@ bool Store::Send(zmq::socket_t* sock){
   zmq::message_t* msg=MakeMsg();
 
   if(!sock->send(*msg)){
-    delete msg;
+    //  delete msg;
     return false;
   }
 
-  delete msg;
+  //delete msg;
   
 
   return true;
