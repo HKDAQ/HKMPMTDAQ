@@ -96,7 +96,7 @@ cd ToolDAQ
 if [ $tooldaq -eq 1 ]
 then
 
-git clone https://github.com/ToolDAQ/ToolDAQFramework.git
+git clone https://github.com/ToolDAQ/ToolDAQFramework.git -b legacy_standalone
 fi
 
 if [ $zmq -eq 1 ]
