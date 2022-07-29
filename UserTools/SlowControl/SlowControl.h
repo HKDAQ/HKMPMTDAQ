@@ -30,7 +30,7 @@ class SlowControl: public Tool {
  private:
 
   zmq::socket_t* slow_control_sock;
-  Utilities* utils;    
+  DAQUtilities* utils;    
   std::map<std::string,Store*> connections;
   zmq::pollitem_t items[1];
   std::string slow_control_port;

@@ -16,7 +16,7 @@ bool DataReceiver::Initialise(std::string configfile, DataModel &data){
 
   data_sock=new zmq::socket_t(*(m_data->context), ZMQ_ROUTER);
 
-  utils= new DAQUtilities(m_data->context);
+  utils= new Utilities(m_data->context);
 
   items[0].socket=*data_sock;
   items[0].fd=0;

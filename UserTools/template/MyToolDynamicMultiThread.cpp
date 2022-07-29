@@ -18,7 +18,7 @@ bool MyToolDynamicMultiThread::Initialise(std::string configfile, DataModel &dat
 
   if(!m_variables.Get("verbose",m_verbose)) m_verbose=1;
 
-  m_util=new Utilities(m_data->context);
+  m_util=new Utilities();
 
   m_threadnum=0;
   CreateThread();
@@ -33,7 +33,7 @@ bool MyToolDynamicMultiThread::Initialise(std::string configfile, DataModel &dat
 
 bool MyToolDynamicMultiThread::Execute(){
 
-  for(int i=0; i<args.size(); i++){
+  for(unsigned int i=0; i<args.size(); i++){
     if(args.at(i)->busy==0){
       std::cout<<"reply="<<args.at(i)->message<<std::endl;
       args.at(i)->message="Hi";
@@ -45,7 +45,7 @@ bool MyToolDynamicMultiThread::Execute(){
 
   m_freethreads=0;
   int lastfree=0;
-  for(int i=0; i<args.size(); i++){
+  for(unsigned int i=0; i<args.size(); i++){
     if(args.at(i)->busy==0){
       m_freethreads++;
       lastfree=i; 
@@ -65,7 +65,7 @@ bool MyToolDynamicMultiThread::Execute(){
 
 bool MyToolDynamicMultiThread::Finalise(){
 
-  for(int i=0;i<args.size();i++) m_util->KillThread(args.at(i));
+  for(unsigned int i=0;i<args.size();i++) m_util->KillThread(args.at(i));
   
   args.clear();
   

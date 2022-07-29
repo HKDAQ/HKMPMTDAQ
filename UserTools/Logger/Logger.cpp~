@@ -18,7 +18,7 @@ bool Logger::Initialise(std::string configfile, DataModel &data){
   logger_sock=new zmq::socket_t(*(m_data->context), ZMQ_SUB);
   logger_sock->setsockopt(ZMQ_SUBSCRIBE,"",0);
 
-  utils= new DAQUtilities(m_data->context);
+  utils= new Utilities(m_data->context);
 
   return true;
 }

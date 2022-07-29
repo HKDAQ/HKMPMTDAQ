@@ -44,6 +44,8 @@ else
      cp -R template $dir
      more $dir/ToolChainConfig | sed s:"configfiles/":"configfiles/"$dir"/": > $dir/tmp
      mv $dir/tmp $dir/ToolChainConfig
+     more $dir/ToolsConfig | sed s:"configfiles/":"configfiles/"$dir"/": > $dir/tmp
+     mv $dir/tmp $dir/ToolsConfig
      ln -s  configfiles/$dir/ToolChainConfig ../$dir
      
 fi

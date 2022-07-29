@@ -30,7 +30,7 @@ class DataReceiver: public Tool {
  private:
 
   zmq::socket_t* data_sock; 
-  Utilities* utils;
+  DAQUtilities* utils;
   std::map<std::string,Store*> connections;
   zmq::pollitem_t items[1];
   unsigned long hitsum;

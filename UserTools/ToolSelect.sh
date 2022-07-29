@@ -81,7 +81,7 @@ Tool* ret=0;
 	    echo "return ret;
 }" >> Factory/Factory.cpp
 	    
-	    for dir in `ls */ | grep / | sed s:'/\:':: | grep -v Factory | grep -v template | grep -v InactiveTools`
+	    for dir in `ls */ | grep / | sed s:'/\:':: | grep -v Factory | grep -v template | grep -v InactiveTools | grep -v ImportedTools`
 	    do
 		exists=0		
 		for Tool in `cat tmptools`		
@@ -148,7 +148,7 @@ Tool* ret=0;
 	rm -f tmpbackup
 
 
-       for dir in `ls */ | grep / | sed s:'/\:':: | grep -v Factory | grep -v template | grep -v InactiveTools`
+       for dir in `ls */ | grep / | sed s:'/\:':: | grep -v Factory | grep -v template | grep -v InactiveTools | grep -v ImportedTools`
             do
                 exists=0
                 for Tool in `cat Factory/Factory.cpp | grep -v '/' |grep if| awk '{print $4}' | sed s:';':: `

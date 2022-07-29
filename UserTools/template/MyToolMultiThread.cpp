@@ -21,7 +21,7 @@ bool MyToolMultiThread::Initialise(std::string configfile, DataModel &data){
   int threadcount=0;
   if(!m_variables.Get("Threads",threadcount)) threadcount=4;
 
-  m_util=new Utilities(m_data->context);
+  m_util=new Utilities();
 
   for(int i=0;i<threadcount;i++){
     MyToolMultiThread_args* tmparg=new MyToolMultiThread_args();   
@@ -43,7 +43,7 @@ bool MyToolMultiThread::Initialise(std::string configfile, DataModel &data){
 
 bool MyToolMultiThread::Execute(){
 
-  for(int i=0; i<args.size(); i++){
+  for(unsigned int i=0; i<args.size(); i++){
     if(args.at(i)->busy==0){
       std::cout<<"reply="<<args.at(i)->message<<std::endl;
       args.at(i)->message="Hi";
@@ -54,7 +54,7 @@ bool MyToolMultiThread::Execute(){
   }
 
   m_freethreads=0;
-  for(int i=0; i<args.size(); i++){
+  for(unsigned int i=0; i<args.size(); i++){
     if(args.at(i)->busy==0) m_freethreads++;
   }
 
@@ -68,7 +68,7 @@ bool MyToolMultiThread::Execute(){
 
 bool MyToolMultiThread::Finalise(){
 
-  for(int i=0;i<args.size();i++) m_util->KillThread(args.at(i));
+  for(unsigned int i=0;i<args.size();i++) m_util->KillThread(args.at(i));
     
   args.clear();
   

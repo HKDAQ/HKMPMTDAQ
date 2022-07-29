@@ -14,7 +14,6 @@ d and so will be thread safe
 *
 * $Author: B.Richards $
 * $Date: 2019/05/28 10:44:00 $
-* Contact: b.richards@qmul.ac.uk
 */
 
 struct MyToolDynamicMultiThread_args:Thread_args{
@@ -33,8 +32,8 @@ struct MyToolDynamicMultiThread_args:Thread_args{
  *
  * $Author: B.Richards $
  * $Date: 2019/05/28 10:44:00 $
- * Contact: b.richards@qmul.ac.uk
  */
+
 class MyToolDynamicMultiThread: public Tool {
 
 

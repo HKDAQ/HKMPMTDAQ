@@ -17,7 +17,7 @@ bool SlowControl::Initialise(std::string configfile, DataModel &data){
   slow_control_sock=new zmq::socket_t(*(m_data->context), ZMQ_ROUTER);
   slow_control_sock->setsockopt(ZMQ_IDENTITY,"MPMTSC1",8);
 
-  utils= new DAQUtilities(m_data->context);
+  utils= new Utilities(m_data->context);
 
   items[0].socket=*slow_control_sock;
   items[0].fd=0;

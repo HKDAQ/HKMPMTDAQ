@@ -30,7 +30,7 @@ class Monitor: public Tool {
  private:
 
   zmq::socket_t* monitor_sock;
-  Utilities* utils;
+  DAQUtilities* utils;
   std::map<std::string,Store*> connections;
   std::string monitor_port;
 

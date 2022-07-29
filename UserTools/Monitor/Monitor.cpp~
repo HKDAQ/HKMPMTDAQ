@@ -18,7 +18,7 @@ bool Monitor::Initialise(std::string configfile, DataModel &data){
   monitor_sock=new zmq::socket_t(*(m_data->context), ZMQ_SUB);
   monitor_sock->setsockopt(ZMQ_SUBSCRIBE,"",0);
 
-  utils= new DAQUtilities(m_data->context);
+  utils= new Utilities(m_data->context);
 
   return true;
 }

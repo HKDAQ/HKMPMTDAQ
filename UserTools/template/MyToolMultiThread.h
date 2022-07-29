@@ -13,7 +13,6 @@
  *
  * $Author: B.Richards $
  * $Date: 2019/05/28 10:44:00 $
- * Contact: b.richards@qmul.ac.uk
  */
 
 struct MyToolMultiThread_args:Thread_args{
@@ -32,7 +31,6 @@ struct MyToolMultiThread_args:Thread_args{
  *
  * $Author: B.Richards $
  * $Date: 2019/05/28 10:44:00 $
- * Contact: b.richards@qmul.ac.uk
  */
 
 class MyToolMultiThread: public Tool {

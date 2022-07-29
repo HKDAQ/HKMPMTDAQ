@@ -5,10 +5,9 @@ Tool* ret=0;
 
 // if (tool=="Type") tool=new Type;
 if (tool=="DummyTool") ret=new DummyTool;
+if (tool=="DataReceiver") ret=new DataReceiver;
 if (tool=="Logger") ret=new Logger;
 if (tool=="Monitor") ret=new Monitor;
 if (tool=="SlowControl") ret=new SlowControl;
-
-  if (tool=="DataReceiver") ret=new DataReceiver;
 return ret;
 }

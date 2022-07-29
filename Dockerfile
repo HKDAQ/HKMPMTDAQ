@@ -1,12 +1,12 @@
-### Created by Dr. Benjamin Richards (b.richards@qmul.ac.uk)
+### Created by Dr. Benjamin Richards
 
 ### Download base image from repo
-FROM tooldaq/tooldaq:base
+FROM toolframework/centos7
 
 ### Run the following commands as super user (root):
 USER root
 
-Run cd ToolDAQApplication; make update; make;
+Run git clone https://github.com/ToolFramework/ToolApplication.git
 
 ### Open terminal
 CMD ["/bin/bash"]

@@ -6,12 +6,14 @@ boostflag=1
 zmq=1
 final=1
 rootflag=0
+setup=0
+threads=`nproc --all`
 
 while [ ! $# -eq 0 ]
 do
     case "$1" in
 	--help | -h)
-	    helpmenu
+	    echo "This script should be run once after initially cloning the ToolApplication repository. It retrieves the ToolFrameworkCore TooDAQFramework ZMQ and BOOST repositories that provides the core framework and dependancies on which your application will be built."
 	    exit
 	    ;;
 
@@ -88,15 +90,22 @@ done
 if [ $init -eq 1 ]
 then
     
-    mkdir ToolDAQ
+    mkdir Dependencies
 fi
 
-cd ToolDAQ
+cd Dependencies
 
 if [ $tooldaq -eq 1 ]
 then
+git clone https://github.com/ToolFramework/ToolFrameworkCore.git
 
-git clone https://github.com/ToolDAQ/ToolDAQFramework.git -b legacy_standalone
+cd ToolFrameworkCore
+make clean
+make -j $threads
+
+export LD_LIBRARY_PATH=`pwd`/lib:$LD_LIBRARY_PATH
+cd ../
+
 fi
 
 if [ $zmq -eq 1 ]
@@ -106,7 +115,7 @@ then
     cd zeromq-4.0.7
     
     ./configure --prefix=`pwd`
-    make -j8
+    make -j $threads
     make install
     
     export LD_LIBRARY_PATH=`pwd`/lib:$LD_LIBRARY_PATH
@@ -118,17 +127,14 @@ if [ $boostflag -eq 1 ]
 then
     
     git clone https://github.com/ToolDAQ/boost_1_66_0.git
-    #wget http://downloads.sourceforge.net/project/boost/boost/1.66.0/boost_1_66_0.tar.gz
-    
-    #tar zxf boost_1_66_0.tar.gz
-    #rm -rf boost_1_66_0.tar.gz
      
     cd boost_1_66_0
-    
-    mkdir install
+
+    rm -rf INSTALL    
+    mkdir install 
     
     ./bootstrap.sh --prefix=`pwd`/install/  > /dev/null 2>/dev/null
-    ./b2 install iostreams
+    ./b2 install iostreams -j $threads
     
     export LD_LIBRARY_PATH=`pwd`/install/lib:$LD_LIBRARY_PATH
     cd ../
@@ -144,7 +150,7 @@ then
     cd root
     
     ./configure --enable-rpath
-    make -j8
+    make -j $threads
     make install
     
     source ./bin/thisroot.sh
@@ -153,6 +159,19 @@ then
     
 fi
 
+if [ $tooldaq -eq 1 ]
+then
+    git clone https://github.com/ToolDAQ/ToolDAQFramework.git
+    
+    cd ToolDAQFramework
+    make clean
+    make -j $threads
+    export LD_LIBRARY_PATH=`pwd`/lib:$LD_LIBRARY_PATH
+    cd ../
+    
+fi
+
+
 cd ../
 
 if [ $final -eq 1 ]
@@ -160,8 +179,28 @@ then
     
     echo "current directory"
     echo `pwd`
+if [ $setup -eq 1 ]
+then   
+    cp -r ./Dependencies/ToolFrameworkCore/DataModel/* ./DataModel
+    cp -r ./Dependencies/ToolDAQFramework/DataModel/* ./DataModel
+    cp -r ./Dependencies/ToolFrameworkCore/UserTools/* ./UserTools
+    cp -r ./Dependencies/ToolDAQFramework/UserTools/template/* ./UserTools/template
+    cp -r ./Dependencies/ToolDAQFramework/configfiles/* ./configfiles
+    mkdir src
+    cp -r ./Dependencies/ToolDAQFramework/src/main.cpp ./src/
+    cp ./Dependencies/ToolDAQFramework/Application/* ./
+    git add DataModel/*
+    git add UserTools/*
+    git add configfiles/*
+    git add ./Makefile
+    git add ./CMakeLists.txt
+    git add ./Setup.sh
+    git add ./src/main.cpp
+    rm -f ./GetToolFramework.sh
+    sed -i 's/setup=0/setup=0/' ./GetToolDAQ.sh
+fi   
     make clean
-    make 
+    make -j $threads
     
     export LD_LIBRARY_PATH=`pwd`/lib:$LD_LIBRARY_PATH
 fi

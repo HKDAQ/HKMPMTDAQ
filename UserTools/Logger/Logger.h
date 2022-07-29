@@ -30,7 +30,7 @@ class Logger: public Tool {
  private:
 
   zmq::socket_t* logger_sock;
-  Utilities* utils;
+  DAQUtilities* utils;
   std::map<std::string,Store*> connections;
   std::string logger_port;
 
